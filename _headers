@@ -1,0 +1,25 @@
+# Netlify liest diese Datei beim Deploy und schickt die Header mit jeder Antwort.
+# Sie gehört ins Wurzelverzeichnis der veröffentlichten Dateien.
+
+/*
+  # Verhindert, dass die Seite in fremde Rahmen eingebettet wird (Clickjacking).
+  X-Frame-Options: DENY
+  # Browser sollen den Dateityp nicht raten.
+  X-Content-Type-Options: nosniff
+  # Beim Klick auf externe Links nur die Domain weitergeben, nicht die volle URL.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Rechte, die diese Seite nie braucht, werden gar nicht erst angeboten.
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+  # Alles kommt vom eigenen Server. Skripte von fremden Adressen werden geblockt —
+  # das ist der wirksamste Schutz gegen eingeschleusten Code.
+  # 'unsafe-inline' steht nur bei style-src, weil die Seiten style="..."-Attribute
+  # und die <noscript>-Blöcke nutzen. Für Skripte ist es bewusst NICHT gesetzt.
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+
+# Schriften und Bilder ändern sich nie unbemerkt — ein Jahr Cache spart
+# Ladezeit bei jedem Wiederbesuch.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

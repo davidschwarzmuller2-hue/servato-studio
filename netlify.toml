@@ -1,0 +1,12 @@
+# Diese Seite hat keinen Build-Schritt: die Dateien im Wurzelverzeichnis
+# werden unverändert veröffentlicht.
+[build]
+  publish = "."
+  command = ""
+
+# Adressen mit www. leiten dauerhaft auf die Hauptadresse weiter.
+[[redirects]]
+  from = "https://www.servatostudio.de/*"
+  to = "https://servatostudio.de/:splat"
+  status = 301
+  force = true

@@ -1,0 +1,1955 @@
+/* Servato Studio — Seiten-Styles.
+   Farben, Abstände, Radien und Schatten kommen aus styles/nocturne.css (var(--…)). */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--color-accent); }
+a:hover { color: var(--color-accent-400); }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* Sprungmarke: für Tastatur- und Screenreader-Nutzer, die sonst auf jeder
+   Seite erst durch die komplette Navigation tabben müssten. Sichtbar erst,
+   wenn sie den Fokus bekommt. */
+.skip-link {
+  position: absolute; left: 12px; top: -100px; z-index: 200;
+  padding: 12px 18px; border-radius: var(--radius-md);
+  background: var(--color-surface); color: var(--color-text);
+  box-shadow: var(--shadow-md); text-decoration: none;
+  font-family: var(--font-heading); font-weight: 500; font-size: 14px;
+  transition: top .18s ease;
+}
+.skip-link:focus-visible { top: 12px; color: var(--color-text); }
+
+/* ---------- Grundbausteine ---------- */
+
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: clamp(20px, 5vw, 56px); }
+.wrap--narrow { max-width: 900px; }
+.section { padding-block: clamp(48px, 8vw, 112px); }
+
+/* Drei Abstufungen für Nebentext. Die Werte sind nicht frei gewählt: bei
+   45 % erreichte .muted-3 auf dem dunklen Grund nur 3,9:1 Kontrast und fiel
+   damit unter die 4,5:1, die WCAG AA für kleinen Text verlangt — betroffen
+   war ausgerechnet Text, der verkauft („Ihr Aufwand: 20 Minuten").
+   Jetzt: 4,8:1 / 6,2:1 / 8,0:1, Abstufung in gleichmäßigen Schritten. */
+.muted   { color: color-mix(in srgb, var(--color-text) 72%, transparent); }
+.muted-2 { color: color-mix(in srgb, var(--color-text) 62%, transparent); }
+.muted-3 { color: color-mix(in srgb, var(--color-text) 52%, transparent); }
+
+.rule-top,
+.rule-bottom {
+  background-image: linear-gradient(to right, var(--color-divider), var(--color-divider) calc(100% - 48px), transparent);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+}
+.rule-top { background-position: top; padding-top: 18px; }
+.rule-bottom { background-position: bottom; }
+.rule-fade { background-image: linear-gradient(to right, var(--color-divider), transparent); }
+
+.kicker {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--color-accent); margin-bottom: 14px;
+}
+
+h1, h2, h3 { font-family: var(--font-heading); font-weight: 500; letter-spacing: -0.025em; margin: 0; }
+/* Deutsche Komposita sind lang: „Datenschutzerklärung" war bei 40px 400px breit
+   und sprengte auf dem Handy den 335px-Kasten — die Seite scrollte seitlich.
+   hyphens greift, weil <html lang="de"> gesetzt ist; overflow-wrap ist die
+   Notbremse für alles, was sich nicht trennen lässt (etwa lange Adressen). */
+h1, h2, h3, .kann__claim, .plan__name, .step__title, .overview__ttl {
+  overflow-wrap: break-word; hyphens: auto;
+}
+h1 { font-size: clamp(32px, 4.6vw, 52px); line-height: 1.06; letter-spacing: -0.03em; text-wrap: balance; }
+h2 { font-size: clamp(27px, 4.4vw, 44px); line-height: 1.08; }
+p  { text-wrap: pretty; }
+
+.lead { font-size: 16px; line-height: 1.65; margin: 0; max-width: 46ch; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 13px 22px;
+  font-family: var(--font-heading); font-weight: 500; font-size: 15px;
+  text-decoration: none; cursor: pointer;
+  border-radius: var(--radius-md); border: 1px solid var(--color-divider);
+  background: transparent; color: var(--color-text);
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.btn:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
+.btn:active { transform: scale(.99); }
+.btn--accent { color: var(--color-accent); border-color: var(--color-accent); }
+.btn--accent:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); color: var(--color-accent); }
+.btn--small { min-height: 40px; padding: 8px 14px; font-size: 14px; }
+.btn--block { width: 100%; }
+.btn--link { border: 0; padding: 4px 0; min-height: 44px; justify-content: flex-start; font-size: 13px; background: none; color: color-mix(in srgb, var(--color-text) 62%, transparent); }
+.btn--link:hover { background: none; color: var(--color-accent); }
+
+/* ---------- Kopfzeile ---------- */
+
+/* ---------- Kopfzeile als schwebende Glas-Pille ----------
+
+   Vorbild: ihre Navigations-Pille. Uebernommen sind Radius (999px), das
+   Innenpolster von 6px, der Aktiv-Chip und der Knopf mit dem farbigen
+   Kreis-Pfeil. Das Blau ist durch dein Gold ersetzt.
+
+   Die Glas-Regeln kommen aus dem Apple-Material-Kapitel:
+
+   - blur PLUS saturate. Nur Weichzeichnen laesst die Farben dahinter
+     ausbleichen; saturate(180%) holt sie zurueck, sonst wirkt das Glas
+     grau statt durchsichtig.
+   - Eine helle Kante oben (inset-Schatten). Das ist das Licht, das sich in
+     der Materialkante faengt — ohne sie sieht die Flaeche aus wie ein
+     Aufkleber, nicht wie eine Scheibe.
+   - Keine Haarlinie mehr unter der Leiste (.rule-bottom ist raus). Eine
+     schwebende Flaeche und ein durchgehender Trennstrich widersprechen
+     sich: entweder schwebt etwas, oder es sitzt auf einer Kante.
+   - Der Schatten wird beim Scrollen tiefer statt eine Linie einzublenden.
+
+   .header selbst faengt keine Klicks (pointer-events: none), sonst laege
+   ein unsichtbarer Balken ueber der ganzen Fensterbreite und schluckte
+   Klicks auf den Inhalt daneben. Nur die Pille selbst nimmt sie an. */
+
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: none;
+  padding: clamp(10px, 1.3vw, 16px) clamp(12px, 4vw, 28px) 0;
+  pointer-events: none;
+}
+
+.header__inner {
+  pointer-events: auto;
+  display: flex; align-items: center; gap: 4px;
+  /* Mobil ueber die volle Breite (Marke links, Menueknopf rechts), ab der
+     grossen Ansicht nur so breit wie ihr Inhalt und mittig — so wie bei
+     ihnen. */
+  width: 100%; max-width: 100%;
+  margin-inline: auto;
+  padding: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-bg) 74%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+          backdrop-filter: saturate(180%) blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .85),                  /* Lichtkante oben */
+    0 0 0 1px color-mix(in srgb, var(--color-text) 7%, transparent),
+    0 14px 34px -20px color-mix(in srgb, var(--color-text) 55%, transparent);
+  transition: box-shadow .4s cubic-bezier(.2,.7,.2,1), background .4s ease;
+}
+
+/* Gescrollt: das Glas wird dichter und der Schatten tiefer — die Pille hebt
+   sich staerker vom Inhalt ab, der jetzt darunter durchlaeuft. */
+.header--fest .header__inner {
+  background: color-mix(in srgb, var(--color-bg) 86%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .9),
+    0 0 0 1px color-mix(in srgb, var(--color-text) 9%, transparent),
+    0 20px 46px -22px color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.header__brand {
+  display: flex; align-items: center; gap: 9px;
+  min-height: 40px; padding: 0 14px 0 12px;
+  margin-right: auto; text-decoration: none; color: var(--color-text);
+  font-family: var(--font-heading); font-weight: 500; font-size: 16px; letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.header__mark { width: 26px; height: 20px; flex: none; display: block; }
+
+/* Mobil: nur Marke und Menueknopf in der Pille. */
+.header__nav, .header__cta { display: none; }
+
+.header__burger {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px;
+  width: 40px; height: 40px; flex: none;
+  cursor: pointer; background: transparent; border: 0; padding: 0;
+  border-radius: 999px;
+}
+.header__burger span {
+  display: block; width: 18px; height: 1.5px; border-radius: 2px;
+  background: var(--color-text);
+  transition: transform .26s cubic-bezier(.2,.7,.2,1), opacity .18s ease;
+}
+.header__burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.header__burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.header__burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* 1040px statt der frueheren 880px: sechs Links, Marke und Knopf brauchen in
+   einer Pille mehr Platz als in einer Leiste ueber die volle Breite. */
+@media (min-width: 1040px) {
+  .header__inner { width: max-content; }
+  .header__brand { margin-right: 4px; }
+  .header__burger { display: none; }
+  .header__nav { display: flex; align-items: center; gap: 2px; }
+  .header__cta { display: inline-flex; }
+}
+
+.header__nav a {
+  padding: 10px 15px; border-radius: 999px;
+  font-size: 14px; text-decoration: none; white-space: nowrap;
+  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+  transition: background .25s ease, color .25s ease;
+}
+.header__nav a:hover {
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
+}
+
+/* Der Aktiv-Chip: bei ihnen eine volle Flaeche unter dem aktuellen Punkt,
+   nicht ein Unterstrich. Auf hellem Grund ist Weiss der Chip. */
+.header__nav a.active {
+  color: var(--color-text); font-weight: 500;
+  background: var(--color-bg);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-text) 12%, transparent);
+}
+
+/* Knopf mit Kreis-Pfeil. Die Fuellung faehrt beim Ueberfahren von unten
+   herein — ihr Bewegungsablauf, ihre Kurve. */
+.header__cta {
+  position: relative; overflow: hidden;
+  align-items: center; gap: 8px;
+  padding: 4px 4px 4px 16px; margin-left: 4px;
+  border-radius: 999px;
+  background: var(--color-bg);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-text) 9%, transparent);
+  color: var(--color-text); font-size: 14px; font-weight: 500;
+  text-decoration: none; white-space: nowrap;
+  transition: color .35s ease;
+}
+.header__cta > span { position: relative; z-index: 1; }
+.header__cta::before {
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  background: var(--color-accent);
+  transform: translateY(101%);
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1);
+}
+.header__cta:hover { color: #fff; }
+.header__cta:hover::before { transform: translateY(0); }
+.header__cta-pfeil {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; flex: none; border-radius: 999px;
+  background: var(--color-accent); color: #fff; font-size: 14px;
+  transition: background .3s ease, color .3s ease;
+}
+.header__cta:hover .header__cta-pfeil { background: #fff; color: var(--color-accent); }
+
+/* Wer Transparenz reduziert hat, bekommt eine deckende Pille statt Glas —
+   das Blenden bleibt weg, die Form bleibt. */
+@media (prefers-reduced-transparency: reduce) {
+  .header__inner, .header--fest .header__inner {
+    background: var(--color-bg);
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .header__inner, .header__cta, .header__cta::before, .header__nav a { transition: none; }
+}
+
+/* ---------- Mobiles Menü ----------
+   Liegt im HTML bewusst AUSSERHALB von <header>: ein Vorfahre mit Filter oder
+   Transform würde sonst zum Bezugsrahmen für position:fixed und das Menü
+   auf Kopfzeilenhöhe zusammenfalten. */
+.menu {
+  position: fixed; inset: 0; z-index: 60;
+  background: color-mix(in srgb, #0a0b12 60%, transparent);
+}
+.menu[hidden] { display: none; }
+.menu__panel {
+  position: absolute; inset: 0 0 auto 0;
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 14px clamp(20px, 5vw, 56px) 26px;
+  background: var(--color-bg);
+  box-shadow: 0 18px 40px rgba(0,0,0,.5);
+  animation: menu-auf .24s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes menu-auf { from { transform: translateY(-10px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .menu__panel { animation: none; } }
+/* Kopfzeile im Menü: Marke links, Schließkreuz rechts. Das Menü liegt über
+   der Seitenkopfzeile — ohne dieses Kreuz wäre der Drei-Striche-Knopf
+   verdeckt und man käme auf dem Handy nur durch Tippen daneben wieder raus. */
+.menu__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding-bottom: 12px; margin-bottom: 8px;
+  background: linear-gradient(to right, var(--color-divider), transparent) no-repeat bottom / 100% 1px;
+}
+.menu__brand {
+  display: flex; align-items: center; gap: 10px; min-height: 44px;
+  text-decoration: none; color: var(--color-text);
+  font-family: var(--font-heading); font-weight: 500; font-size: 17px;
+  letter-spacing: -0.01em;
+}
+.menu__brand img { width: 28px; height: 22px; flex: none; display: block; }
+.menu__close {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; flex: none; margin-right: -10px;
+  cursor: pointer; background: transparent; border: 0; padding: 0;
+  border-radius: var(--radius-md); color: var(--color-text);
+  font-size: 16px; line-height: 1;
+}
+.menu__close:hover { background: color-mix(in srgb, var(--color-text) 8%, transparent); }
+
+.menu__panel a:not(.btn):not(.menu__brand) {
+  display: flex; align-items: center; min-height: 52px;
+  font-family: var(--font-heading); font-weight: 500; font-size: 17px;
+  text-decoration: none; color: var(--color-text);
+  background: linear-gradient(to right, var(--color-divider), transparent) no-repeat bottom / 100% 1px;
+}
+.menu__panel a[aria-current="page"] { color: var(--color-accent); }
+.menu__panel .btn { margin-top: 18px; }
+
+/* ---------- Hero ---------- */
+
+.hero {
+  position: relative;
+  display: grid; gap: clamp(40px, 6vw, 72px); align-items: center;
+  grid-template-columns: 1fr;
+  padding-top: clamp(28px, 9vw, 112px);
+  padding-bottom: clamp(40px, 6vw, 80px);
+}
+@media (min-width: 980px) { .hero { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+.hero__glow {
+  position: absolute; top: -160px; left: -140px; width: 460px; height: 460px;
+  border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--color-accent) 16%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 6%, transparent) 44%,
+    transparent 72%);
+}
+.hero__col { position: relative; }
+.hero__sub { font-size: clamp(16px, 2.1vw, 18px); line-height: 1.62; max-width: 44ch; margin: 22px 0 30px; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 38px; }
+.hero__dim { color: color-mix(in srgb, var(--color-text) 52%, transparent); }
+
+
+/* ---------- Buehne (Hero der Startseite) ----------
+   Komposition nach cbsolutions-agency.de: alles zentriert, die Ueberschrift
+   fuehrt, ein Serif-Kursiv-Satzteil sitzt mitten drin. Keine Ladeanimation
+   mehr wie in der Vorgaengerfassung - das Vorbild steht ruhig da. */
+.buehne { padding-block: clamp(34px, 6vw, 88px) clamp(26px, 4vw, 52px); }
+.buehne__inner {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: clamp(16px, 2.2vw, 24px);
+}
+
+/* Vorspann-Pille - beim Vorbild eine weisse Pille mit Haarlinie */
+.buehne__badge {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 7px 16px; border-radius: 100px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 12.5px; letter-spacing: -0.01em;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+.buehne__punkt {
+  width: 7px; height: 7px; border-radius: 50%; flex: none;
+  background: #12a05c;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #12a05c 18%, transparent);
+}
+
+/* Die Ueberschrift ist das Herz des Vorbilds: Grotesk, Gewicht 600, und
+   ein sehr enges Tracking von rund -0.055em. Genau dieses Zusammenziehen
+   laesst sie "gebaut" statt "gesetzt" wirken. */
+.buehne__h1 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: clamp(32px, 5.6vw, 62px);
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+  /* In em, nicht in px: so bricht die Zeile bei jeder Schriftgroesse an
+     derselben Stelle um. 11.3em sind bei 62px genau die 700px, die
+     gemessen die schoenste Treppe ergeben (592/412/477) - mit dem
+     Serif-Satzteil allein auf der Schlusszeile, wie beim Vorbild.
+     Breiter wurden es zwei kopflastige Zeilen (683/809), schmaler vier. */
+  max-width: 11.3em;
+  margin: 0;
+  text-wrap: balance;
+}
+/* Der Serif-Akzent. Steht bewusst nur an EINER Stelle pro Ueberschrift -
+   beim Vorbild ist das die Regel, und sie traegt den ganzen Effekt. */
+.serif {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.037em;
+}
+.buehne__sub {
+  font-size: clamp(15px, 1.7vw, 17.5px); line-height: 1.6;
+  max-width: 52ch; margin: 0;
+  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+}
+.buehne__handlung {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  margin-top: 6px;
+}
+.buehne__mikro {
+  font-size: 12.5px; margin: 0;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.buehne__leiste {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 10px clamp(18px, 3vw, 34px);
+  margin-top: clamp(14px, 2.4vw, 26px); padding-top: 18px; width: 100%;
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  background: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat top / 100% 1px;
+}
+
+/* ---------- Website-Check ---------- */
+
+.check { position: relative; scroll-margin-top: 90px; }
+.check__card {
+  min-height: 430px; display: flex; flex-direction: column; gap: 20px;
+  padding: clamp(22px, 3vw, 30px);
+  border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-md);
+}
+.check__head { display: flex; align-items: center; gap: 12px; }
+.check__head .kicker { margin: 0 auto 0 0; }
+.check__bar { height: 2px; border-radius: 2px; overflow: hidden; background: color-mix(in srgb, var(--color-text) 10%, transparent); }
+.check__bar span { display: block; height: 100%; border-radius: 2px; background: var(--color-accent); transition: width .45s cubic-bezier(.2,.7,.2,1); }
+.check__pane { display: flex; flex-direction: column; gap: 18px; }
+.check__pane[hidden] { display: none; }
+.check__q { font-size: clamp(20px, 2.6vw, 24px); line-height: 1.2; letter-spacing: -0.02em; }
+.check__hint { font-size: 13.5px; line-height: 1.55; margin: 0; }
+.check__options { display: flex; flex-direction: column; gap: 9px; }
+.option {
+  cursor: pointer; text-align: left;
+  display: flex; align-items: center; gap: 12px;
+  min-height: 48px; padding: 12px 14px;
+  border-radius: var(--radius-md); border: 1px solid var(--color-divider);
+  background: transparent; color: var(--color-text); font: inherit; font-size: 14.5px;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.option:hover {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
+.option:active { transform: scale(.99); }
+.option::before {
+  content: ""; width: 18px; height: 18px; flex: none;
+  border-radius: 50%; border: 1.5px solid var(--color-divider);
+}
+.score { display: flex; align-items: baseline; gap: 10px; }
+.score__num { font-family: var(--font-heading); font-weight: 500; font-size: clamp(40px, 6vw, 52px); letter-spacing: -0.03em; line-height: 1; }
+.findings { display: flex; flex-direction: column; gap: 9px; }
+.finding { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.5; color: color-mix(in srgb, var(--color-text) 78%, transparent); }
+.finding__mark { flex: none; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.finding--good .finding__mark { color: var(--color-accent); }
+.check__note { font-size: 12px; text-align: center; margin: 14px 0 0; }
+
+/* ---------- Ablauf ---------- */
+
+.split {
+  display: grid; gap: clamp(28px, 4vw, 56px);
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  align-items: start; margin-bottom: clamp(32px, 4vw, 48px);
+}
+.steps {
+  display: grid; gap: 1px; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  background: var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.step { background: var(--color-surface); padding: clamp(20px, 2.6vw, 28px); display: flex; flex-direction: column; gap: 10px; }
+.step__meta { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: 11px; }
+.step__no { color: var(--color-accent); }
+.step__title { font-family: var(--font-heading); font-weight: 500; font-size: 18px; letter-spacing: -0.01em; }
+.step p { font-size: 13px; line-height: 1.6; margin: 0; color: color-mix(in srgb, var(--color-text) 66%, transparent); }
+.step__effort { font-size: 11px; margin-top: auto; padding-top: 12px; }
+
+/* ---------- Ablauf als Pfad ----------
+
+   Die vier Stufen sitzen abwechselnd links und rechts, eine goldene Kurve
+   verbindet sie. Drei Entscheidungen, die den Baustein tragen:
+
+   1. Die Kurve ist EIN <svg> ueber der ganzen Spalte, mit
+      preserveAspectRatio="none" auf die tatsaechliche Hoehe gezerrt. Damit
+      muss ich die Kartenhoehen nicht kennen — sie duerfen wachsen, die
+      Linie wandert mit. Ohne das braeuchte es feste Hoehen oder ein
+      Skript, das bei jedem Resize nachmisst.
+      vector-effect="non-scaling-stroke" haelt die Strichstaerke dabei
+      konstant, sonst wuerde sie mitverzerrt.
+   2. grid-auto-rows: 1fr zwingt alle vier Reihen auf dieselbe Hoehe. Nur
+      deshalb liegen die Kartenmitten exakt bei 12,5 / 37,5 / 62,5 / 87,5 %
+      — genau die Punkte, die der Pfad anfaehrt.
+   3. pathLength="1" normiert die Pfadlaenge auf 1. dasharray/dashoffset
+      rechnen dann in Prozent statt in Pixeln, und ich muss die echte
+      Laenge der Kurve nie ausmessen.
+
+   Gezeichnet wird ueber view-timeline, nicht ueber JavaScript: der Browser
+   koppelt die Animation direkt an die Scrollposition, im Compositor, ohne
+   Scroll-Listener. Wo das fehlt, steht die Linie einfach fertig da — der
+   Baustein funktioniert ohne die Animation genauso. */
+
+/* 60rem ist ihr Mass fuer die Spur. Es steckt in der Pfad-Formel drin: die
+   Ankerpunkte liegen bei 30 % und 70 % DIESER Breite. Laesst man die Spur
+   breiter laufen, wandern die Anker mit und treffen die Karten nicht mehr. */
+.pfad { position: relative; max-width: 60rem; margin-inline: auto; }
+
+/* Das Band laeuft absichtlich ueber die Spur hinaus (bis 130 % der Breite).
+   Damit das keinen Seitenscroll erzeugt, schneidet das graue Band ab — ueber
+   die volle Fensterbreite, nicht an der Spurkante. :has() begrenzt das auf
+   genau dieses eine Band; die vier anderen Seiten mit .band bleiben, wie sie
+   sind.
+
+   `clip`, NICHT `hidden`. Der Unterschied ist hier alles: `hidden` macht aus
+   dem Element einen Scroll-Container, auch wenn es nie scrollt. Scroll-
+   Zeitachsen haengen sich immer an den naechsten Scroll-Container — mit
+   `hidden` landeten beide Animationen an diesem toten Band statt am Dokument,
+   ihre currentTime war null, und alles stand still. `clip` schneidet ab, ohne
+   einen Scroll-Container zu erzeugen. */
+.band:has(.pfad) {
+  overflow-x: clip;
+  /* Zusaetzliche Luft nach unten. Bei ihnen folgen auf den Abschnitt noch
+     Bewertungen, FAQ und Kontakt — Scrollweg, waehrend dessen die letzte
+     Karte fertig einblenden kann. Hier folgt nur noch ein kurzer Abschnitt
+     und der Fuss. Ohne diesen Zuschlag erreicht die vierte Karte ihr
+     Bereichsende nicht mehr und bleibt fuer immer halb sichtbar. */
+  padding-bottom: clamp(80px, 14vh, 190px);
+}
+
+.pfad__stufen {
+  display: grid; grid-auto-rows: 1fr; position: relative; z-index: 1;
+  /* <ol> bringt von Haus aus padding-left und margin mit. Beides muss weg,
+     sonst ist die Liste hoeher als .pfad und die Ankerpunkte des SVG
+     verschieben sich gegen die Kartenmitten. */
+  list-style: none; margin: 0; padding: 0;
+}
+
+.pfad__linie {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+  overflow: visible;   /* ein <svg> clippt sonst am eigenen viewBox */
+}
+.pfad__zug {
+  fill: none; stroke: var(--color-accent-300);
+  /* Ein Band, kein Strich — 26 px mit runden Enden, dazu ein weicher Schein
+     in derselben Farbe. Das ist der ganze Unterschied zwischen „da ist eine
+     Linie“ und „da fuehrt ein Weg durch“. Der Schein ist ein
+     drop-shadow-Filter statt eines zweiten, breiteren Pfades: der Filter
+     folgt der Rundung an den Enden mit, ein zweiter Pfad nicht. */
+  stroke-width: 26; stroke-linecap: round; stroke-linejoin: round;
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--color-accent-300) 60%, transparent));
+}
+
+.pfad__stufe {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0; align-items: center;
+}
+/* Erste Karte RECHTS, dann wechselnd — bei ihnen bekommt Index 0 die rechte
+   Spalte. Daraus folgt der Einlauf von rechts oben; kaeme die erste Karte
+   links, muesste das Band quer ueber die ganze Spur, bevor es irgendwo
+   ankommt. */
+.pfad__stufe:nth-child(even) > .karte-stufe { grid-column: 1; }
+
+.karte-stufe {
+  grid-column: 2;
+  /* Schmaler als die Spalte und mittig darin: nur dadurch bleibt in der
+     Mitte ein Korridor frei, durch den das Band sichtbar schwingt. Fuellen
+     die Karten ihre Spalte ganz aus, sieht man vom Band nur noch den
+     schmalen Streifen im Spaltenabstand — dann wirkt es wie abgeschnittene
+     Keile statt wie ein durchgehender Weg. */
+  max-width: 23rem; justify-self: start; width: 100%;
+  display: flex; flex-direction: column; gap: 11px;
+  padding: clamp(20px, 2.4vw, 28px);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-md), 0 0 0 5px color-mix(in srgb, var(--color-accent) 5%, transparent);
+  transition: transform .5s cubic-bezier(.2,.7,.2,1), box-shadow .5s cubic-bezier(.2,.7,.2,1);
+}
+.karte-stufe:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+.karte-stufe__kopf { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.karte-stufe__no {
+  font-size: 12px; line-height: 1; padding: 6px 8px; border-radius: var(--radius-sm);
+  background: var(--color-accent-100); color: var(--color-accent-700);
+}
+.karte-stufe__zeit {
+  font-size: 11px; padding: 5px 10px; border-radius: 999px; white-space: nowrap;
+  background: var(--color-surface); color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+.karte-stufe__titel { font-family: var(--font-heading); font-weight: 500; font-size: clamp(19px, 2vw, 22px); letter-spacing: -0.015em; }
+.karte-stufe p { font-size: 13.5px; line-height: 1.6; margin: 0; color: color-mix(in srgb, var(--color-text) 68%, transparent); }
+
+.karte-stufe__marken { display: flex; flex-wrap: wrap; gap: 7px; list-style: none; margin: 3px 0 0; padding: 0; }
+.karte-stufe__marken li {
+  font-size: 11.5px; padding: 5px 11px; border-radius: 999px;
+  background: var(--color-surface);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+.karte-stufe__aufwand { font-size: 11px; margin-top: 4px; padding-top: 12px; }
+
+/* Die Karten haengen am Scrollrad, nicht an einem Ausloeser — und alle vier
+   an DERSELBEN Zeitachse.
+
+   Das ist der Punkt, an dem es vorher noch anders war als beim Vorbild. Mit
+   `view()` haette jede Karte ihre eigene Zeitachse und richtete sich nur nach
+   ihrer eigenen Lage. Folge: eine Karte war schon voll da, waehrend sie noch
+   am unteren Bildschirmrand klebte — sie sah abgeschnitten aus.
+
+   Beim Vorbild gibt es EINEN Fortschritt fuer den ganzen Abschnitt, und die
+   Karten bekommen daraus nacheinander ihre Scheibe:
+
+     w        = clamp((0,82 · Fensterhoehe − Spur.top) / (Spur.hoehe + 0,35 · Fensterhoehe), 0, 1)
+     Karte c  = clamp(w · (Anzahl + 0,4) − c − 0,1, 0, 1)
+     Band     = clamp(w · 1,12, 0, 1)
+
+   Ihr w = 0 liegt bei cover 7,9 % dieser Spur. Ihr w = 1 laege bei 79,5 % —
+   so weit reicht der Scrollweg dieser Seite aber nicht, weil hier nach dem
+   Abschnitt fast nichts mehr kommt. Der Plan ist deshalb auf 69,5 % gestaucht:
+   dieselbe Aufteilung, derselbe Ablauf, nur ein kuerzeres Lineal. Die Fenster stossen aneinander (25,8 → 25,8 → 42,0 …),
+   deshalb blendet immer nur eine Karte zur Zeit ein.
+
+   Weil die Werte an einer Fensterhoehe von 900 px und 1159 px Spurhoehe
+   haengen, verschieben sie sich auf sehr hohen oder flachen Schirmen etwas.
+   Die Reihenfolge bleibt in jedem Fall; nur der Punkt, an dem eine Karte
+   fertig ist, wandert ein wenig.
+
+   Bewegt wird ueber `translate`, nicht ueber `transform`: sonst wuerde die
+   Animation das transform der :hover-Regel ueberschreiben und das Anheben
+   beim Mauszeiger waere tot. Die 26 px sind ihr Wert. */
+@keyframes karte-auf {
+  from { opacity: 0; translate: 0 26px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* Ab hier zeichnet der Browser die Kurve am Scrollrad. Alles in diesem
+   Block ist Zugabe: faellt es weg, ist die Linie von Anfang an ganz da. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .pfad { view-timeline: --pfad block; }
+
+    /* Alle vier Karten an derselben Zeitachse wie das Band. */
+    .karte-stufe {
+      animation: karte-auf linear both;
+      animation-timeline: --pfad;
+      will-change: opacity, translate;
+    }
+    .pfad__stufe:nth-child(1) > .karte-stufe { animation-range: cover  9.3% cover 23.3%; }
+    .pfad__stufe:nth-child(2) > .karte-stufe { animation-range: cover 23.3% cover 37.3%; }
+    .pfad__stufe:nth-child(3) > .karte-stufe { animation-range: cover 37.3% cover 51.3%; }
+    .pfad__stufe:nth-child(4) > .karte-stufe { animation-range: cover 51.3% cover 65.3%; }
+
+    .pfad__zug {
+      stroke-dasharray: 1; stroke-dashoffset: 1;
+      animation: pfad-zeichnen linear both;
+      animation-timeline: --pfad;
+      /* Ihr Band ist bei w = 1/1,12 = 89,3 % des Fortschritts fertig, das
+         entspricht cover 71,8 %. Die letzte Karte braucht bis 74,6 % — das
+         Band kommt also an, dann blendet die Karte fertig ein. In dieser
+         Reihenfolge, nicht umgekehrt. */
+      animation-range: cover 7.9% cover 62.9%;
+    }
+  }
+}
+@keyframes pfad-zeichnen { to { stroke-dashoffset: 0; } }
+
+/* Auf schmalen Schirmen bringt die Kurve nichts: die Karten stehen ohnehin
+   untereinander. Statt sie zu einem duennen Zickzack zu quetschen, wird
+   daraus eine gerade Schiene links — dieselbe Aussage, weniger Aufwand. */
+@media (max-width: 760px) {
+  .pfad__linie { display: none; }
+  .pfad__stufen { grid-auto-rows: auto; gap: 16px; padding-left: 26px; }
+  .pfad__stufe { display: block; }
+  .karte-stufe { max-width: none; }
+  .pfad__stufe > .karte-stufe { grid-column: auto; }
+  .pfad::before {
+    content: ""; position: absolute; z-index: 0;
+    left: 6px; top: 12px; bottom: 12px; width: 2px;
+    background: linear-gradient(var(--color-accent-200), var(--color-accent-300));
+    border-radius: 2px;
+  }
+  .karte-stufe { position: relative; }
+  .karte-stufe::before {
+    content: ""; position: absolute; left: -26px; top: 26px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--color-accent); box-shadow: 0 0 0 4px var(--color-bg);
+  }
+}
+
+/* ---------- Preise ---------- */
+
+.plans { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr)); align-items: stretch; }
+.plan {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: clamp(22px, 2.6vw, 30px);
+  border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm);
+}
+.plan--featured { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 55%, transparent), var(--shadow-md); }
+.plan__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.plan__name { font-family: var(--font-heading); font-weight: 500; font-size: 19px; }
+.plan__badge { font-size: 11px; padding: 3px 10px; border-radius: 6px; white-space: nowrap; background: var(--color-accent-800); color: var(--color-accent-100); }
+.plan__for { font-size: 13px; line-height: 1.55; margin: 0; color: color-mix(in srgb, var(--color-text) 62%, transparent); }
+.plan__price { display: flex; align-items: baseline; gap: 7px; padding: 6px 0 12px; }
+.plan__price b { font-family: var(--font-heading); font-weight: 500; font-size: 34px; letter-spacing: -0.03em; }
+.plan__price span { font-size: 13px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.plan__features { list-style: none; margin: 0; padding: 14px 0 0; display: flex; flex-direction: column; gap: 9px; }
+.plan__features li {
+  display: flex; gap: 9px; font-size: 13px; line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+}
+.plan__features li::before { content: "—"; color: var(--color-accent); flex: none; }
+.plan .btn { margin-top: auto; font-size: 14px; padding: 12px 16px; }
+.plan__aside { font-size: 13px; margin: 18px 0 0; max-width: 62ch; }
+
+/* ---------- „In jedem Paket" (nur preise.html) ----------
+   Familie von .klartext auf ueber.html: Umriss-Ziffern, strenges Raster.
+   Bewusst OHNE getönte Fläche — direkt unter den drei Preiskarten würden
+   sich zwei Kästen gegenseitig die Aufmerksamkeit nehmen. Stattdessen
+   senkrechte Haarlinien zwischen den Spalten. */
+.inklusive { margin-top: clamp(40px, 5vw, 64px); }
+.inklusive .kicker { margin-bottom: clamp(20px, 2.6vw, 28px); }
+.inklusive__grid { display: grid; gap: 26px 0; grid-template-columns: 1fr; }
+@media (min-width: 600px) {
+  .inklusive__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .inklusive__item { padding-left: 24px; border-left: 1px solid var(--color-divider); }
+  .inklusive__item:nth-child(2n+1) { padding-left: 0; border-left: 0; }
+}
+/* Ab vier Spalten trennt jede Linie außer der ganz linken */
+@media (min-width: 940px) {
+  .inklusive__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .inklusive__item,
+  .inklusive__item:nth-child(2n+1) { padding-left: 24px; border-left: 1px solid var(--color-divider); }
+  .inklusive__item:first-child { padding-left: 0; border-left: 0; }
+}
+.inklusive__no {
+  display: block; margin-bottom: 12px;
+  font-family: var(--font-heading); font-weight: 500; font-size: 26px; line-height: 1;
+  letter-spacing: -0.03em; color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--color-accent) 70%, transparent);
+}
+.inklusive__item h3 { font-size: 15.5px; line-height: 1.3; margin: 0 0 7px; letter-spacing: -0.01em; }
+.inklusive__item p {
+  font-size: 13px; line-height: 1.6; margin: 0; max-width: 34ch;
+  color: color-mix(in srgb, var(--color-text) 66%, transparent);
+}
+.inklusive__note {
+  margin: clamp(24px, 3vw, 32px) 0 0; padding-top: 16px; font-size: 12.5px;
+  background: linear-gradient(to right, var(--color-divider), transparent) no-repeat top / 100% 1px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* ---------- Preisrechner ---------- */
+
+.calc {
+  margin-top: clamp(36px, 4vw, 56px);
+  display: grid; gap: clamp(24px, 3vw, 40px); grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm);
+}
+.calc__title { font-family: var(--font-heading); font-weight: 500; font-size: 20px; margin-bottom: 6px; }
+/* Ersatz für Check und Rechner, wenn JavaScript aus ist (siehe <noscript>). */
+.calc-fallback {
+  margin-top: clamp(36px, 4vw, 56px);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm);
+}
+.calc-fallback p {
+  font-size: 14px; line-height: 1.65; margin: 0; max-width: 54ch;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+.calc__intro { font-size: 13px; margin: 0 0 22px; color: color-mix(in srgb, var(--color-text) 60%, transparent); }
+.stepper { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 18px; }
+.stepper__label { font-size: 14px; font-family: var(--font-heading); font-weight: 500; }
+.stepper__hint { font-size: 12px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.stepper__controls { display: flex; align-items: center; gap: 4px; }
+.stepper__btn {
+  cursor: pointer; width: 44px; height: 44px;
+  border-radius: var(--radius-md); border: 1px solid var(--color-divider);
+  background: transparent; color: var(--color-text); font-size: 17px; line-height: 1;
+  transition: background .18s ease;
+}
+.stepper__btn:hover { background: color-mix(in srgb, var(--color-text) 8%, transparent); }
+.stepper__value { min-width: 36px; text-align: center; font-family: var(--font-heading); font-weight: 500; font-size: 17px; }
+.extras { display: flex; flex-direction: column; gap: 8px; }
+.extra {
+  cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px;
+  min-height: 46px; padding: 11px 13px;
+  border-radius: var(--radius-md); border: 1px solid var(--color-divider);
+  background: transparent; color: var(--color-text); font: inherit;
+  transition: background .18s ease, border-color .18s ease;
+}
+.extra__box { width: 16px; height: 16px; flex: none; border-radius: 4px; border: 1.5px solid var(--color-divider); }
+.extra__label { flex: 1; font-size: 13.5px; }
+.extra__price { font-size: 12px; white-space: nowrap; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.extra[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+.extra[aria-pressed="true"] .extra__box { background: var(--color-accent); border-color: var(--color-accent); }
+.result {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: clamp(20px, 2.6vw, 26px); border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 32%, transparent);
+}
+.result__total { display: flex; align-items: baseline; gap: 8px; }
+.result__total b { font-family: var(--font-heading); font-weight: 500; font-size: clamp(38px, 5.6vw, 50px); letter-spacing: -0.03em; line-height: 1; }
+.result__total span { font-size: 14px; color: color-mix(in srgb, var(--color-text) 58%, transparent); }
+.result__lines {
+  display: flex; flex-direction: column; gap: 7px; padding-top: 16px;
+  background: linear-gradient(to right, color-mix(in srgb, var(--color-accent) 32%, transparent), transparent) no-repeat top / 100% 1px;
+}
+.result__line { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.result__weeks { font-size: 12.5px; color: color-mix(in srgb, var(--color-text) 58%, transparent); }
+.result .btn { margin-top: auto; font-size: 14px; padding: 12px 16px; }
+
+/* ---------- Personen-Hero (nur ueber.html) ----------
+   Nach Davids Vorlage: eine gerundete Karte statt einer offenen
+   Ueberschrift. Der Kern der Vorlage ist nicht der Verlauf an sich,
+   sondern dass das Licht von OBEN MITTIG kommt und nach unten ausgeht.
+   Ein gleichmaessiger Verlauf ueber die ganze Flaeche sieht dagegen aus
+   wie eingefaerbtes Papier.
+
+   Zwei Radialen statt einer: Gold vorn und eng, Bernstein dahinter und
+   breiter. Eine einzelne Radiale bleibt flach, weil ihr der zweite
+   Farbton fehlt, an dem das Auge Tiefe ablesen kann. Beide sitzen mit
+   negativem Y-Anteil, der Mittelpunkt liegt also ueber der Karte: nur so
+   ist der hellste Punkt eine Kante und kein Fleck. */
+.person-rand { padding-inline: clamp(10px, 1.6vw, 22px); padding-top: clamp(6px, 1vw, 14px); }
+.person {
+  position: relative; isolation: isolate; overflow: hidden;
+  border-radius: clamp(18px, 2.2vw, 30px);
+  padding: clamp(60px, 9.5vw, 130px) clamp(24px, 6vw, 72px) clamp(54px, 8vw, 104px);
+  text-align: center;
+  background: linear-gradient(180deg, #fdf6e6 0%, #fffdf8 58%, #ffffff 100%);
+  box-shadow: inset 0 0 0 1px rgba(138, 90, 0, .12),
+              0 1px 2px rgba(60, 40, 10, .05),
+              0 26px 64px -34px rgba(120, 80, 20, .26);
+}
+.person::before, .person::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+}
+.person::before {
+  background: radial-gradient(56% 72% at 50% -8%,
+    rgba(217, 165, 32, .60) 0%, rgba(217, 165, 32, .21) 38%, rgba(217, 165, 32, 0) 70%);
+}
+.person::after {
+  background: radial-gradient(94% 90% at 50% -20%,
+    rgba(224, 123, 57, .30) 0%, rgba(194, 65, 12, .09) 46%, rgba(194, 65, 12, 0) 74%);
+}
+.person__kicker {
+  margin: 0 0 clamp(14px, 1.6vw, 20px);
+  font-size: 11px; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase;
+  /* NICHT --color-accent. Gemessen auf dem Grund an dieser Stelle
+     (#f2ddbc): #8a5a00 kommt nur auf 4,47:1 und faellt damit unter die
+     4,5:1, die AA fuer 11-px-Text verlangt. Auf Weiss haette derselbe Ton
+     5,93:1 gehabt. Der naechste Schritt der Rampe steht bei 5,57:1. */
+  color: #7c4a11;
+}
+/* Ein Name traegt keine Serifen-Kursive: der Akzent hebt einen Satzteil
+   hervor, und ein Eigenname hat keinen. Er kommt eine Bildschirmhoehe
+   weiter unten zurueck. */
+.person__name {
+  margin: 0; font-weight: 600;
+  font-size: clamp(38px, 8.2vw, 94px);
+  line-height: .97; letter-spacing: -0.055em;
+}
+.person__lead {
+  margin: clamp(20px, 2.4vw, 30px) auto 0; max-width: 44ch;
+  font-size: clamp(15.5px, 1.2vw, 17.5px); line-height: 1.62; color: #4f4f4f;
+}
+.person__cta { margin-top: clamp(26px, 3.2vw, 42px); gap: 13px; padding-right: 7px; }
+.person__kreis {
+  display: inline-grid; place-items: center;
+  width: 31px; height: 31px; border-radius: 50%;
+  background: var(--color-accent); color: #fff;
+  font-size: 13.5px; line-height: 1;
+  transition: transform .34s cubic-bezier(.22, 1, .36, 1);
+}
+.person__cta:hover .person__kreis { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .person__kreis { transition: none; } }
+
+/* ---------- Ueber mich: Kurzprofil + Einordnung (nur ueber.html) ----------
+   .about hatte nie eine eigene Regel und war damit display:block. Das
+   Portraetfoto stand also nicht neben dem Steckbrief, sondern in voller
+   Naturgroesse (900 x 1125) darunter und kostete 1145 px Seitenhoehe.
+   Das Foto ist raus, .about ist jetzt das Raster, das es immer sein wollte.
+
+   Umbruch bei 900 px statt bei 820 px wie .weg: die rechte Spalte traegt
+   eine Ueberschrift und braucht mehr Mass als drei kurze Saetze. */
+.about { display: grid; gap: clamp(30px, 4vw, 64px); align-items: start; }
+@media (min-width: 900px) {
+  .about { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); }
+  /* Optisch statt mathematisch ausgerichtet: die Ueberschrift rechts soll
+     mit der ersten Steckbrief-Zeile fluchten, nicht mit dem Kicker. */
+  .about__einordnung { padding-top: 33px; }
+}
+.about__satz {
+  font-size: clamp(22px, 2.3vw, 29px); line-height: 1.24;
+  margin: 0 0 4px; max-width: 18ch;
+}
+/* Der Weg zur Arbeit ist der Ersatz fuer das Foto: nachsehen schlaegt
+   ansehen. Der Pfeil laeuft mit, weil die Bewegung die Richtung meint. */
+.about__link {
+  display: inline-flex; align-items: baseline; gap: 9px;
+  margin-top: 24px; font-size: 15px; font-weight: 500;
+  color: var(--color-accent); text-decoration: none;
+}
+.about__pfeil { transition: transform .34s cubic-bezier(.22, 1, .36, 1); }
+.about__link:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+.about__link:hover .about__pfeil { transform: translateX(5px); }
+@media (prefers-reduced-motion: reduce) { .about__pfeil { transition: none; } }
+
+/* ---------- Steckbrief (nur ueber.html) ----------
+   Ersetzt fuenf Absaetze Fliesstext. Der Gewinn ist nicht die Kuerze
+   allein, sondern die feste Spalte links: das Auge springt an ihr
+   entlang und findet die gesuchte Angabe, ohne zu lesen.
+
+   <dl> mit <div> um jedes Paar ist seit HTML5 erlaubt und der einzige
+   Weg, Beschreibungspaare als Raster zu setzen. */
+.steckbrief { margin: 18px 0 0; }
+.steckbrief > div {
+  display: grid;
+  grid-template-columns: minmax(84px, 24%) minmax(0, 1fr);
+  gap: 6px 18px;
+  padding: 13px 2px;
+  border-top: 1px solid var(--color-divider);
+}
+.steckbrief > div:last-child { border-bottom: 1px solid var(--color-divider); }
+.steckbrief dt { font-size: 13px; color: #757575; padding-top: 2px; }
+.steckbrief dd { margin: 0; font-size: 15.5px; line-height: 1.45; }
+@media (max-width: 420px) {
+  /* Zwei Spalten waeren hier je 40 % einer Handybreite: beide Seiten
+     wuerden umbrechen. Untereinander liest es sich besser. */
+  .steckbrief > div { grid-template-columns: 1fr; gap: 2px; }
+}
+.steckbrief__folge { margin: 20px 0 0; font-size: 14.5px; line-height: 1.6; max-width: 46ch; }
+
+/* ---------- Drei Stationen (nur ueber.html) ----------
+   Die Punkte sitzen auf einer durchgehenden Haarlinie. Die Linie ist
+   kein eigenes Element, sondern das ::after jeder Station, das bis zur
+   naechsten reicht — deshalb braucht die letzte keins.
+   Auf schmalen Schirmen faellt die Linie weg: senkrecht untereinander
+   wuerde sie durch den Text laufen. */
+.weg {
+  display: grid; grid-template-columns: 1fr;
+  gap: clamp(26px, 3.5vw, 34px);
+  margin-top: clamp(26px, 4vw, 42px);
+}
+@media (min-width: 820px) { .weg { grid-template-columns: repeat(3, 1fr); } }
+.weg__station { position: relative; padding-top: 28px; }
+.weg__station::before {
+  content: ""; position: absolute; left: 0; top: 0;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 4px rgba(138, 90, 0, .13);
+}
+@media (min-width: 820px) {
+  .weg__station::after {
+    content: ""; position: absolute;
+    top: 5px; left: 19px; right: -12px; height: 1px;
+    background: var(--color-divider);
+  }
+  .weg__station:last-child::after { content: none; }
+}
+.weg__titel {
+  font-family: var(--font-heading); font-weight: 600;
+  font-size: 17.5px; letter-spacing: -0.025em;
+  margin: 0 0 7px;
+}
+.weg__text { font-size: 14.5px; line-height: 1.6; margin: 0; max-width: 34ch; }
+
+/* ---------- FAQ ---------- */
+
+.faq { display: flex; flex-direction: column; }
+
+/* Eine weisse Karte mit Haarlinien dazwischen statt acht Einzelkarten.
+   Das ist der Griff aus den Systemeinstellungen von iOS: eine Gruppe,
+   innen getrennt. Acht gerundete Kaesten untereinander wirken unruhig,
+   weil das Auge acht Umrisse zaehlt statt einer Liste. */
+.band .faq {
+  background: #fff;
+  border-radius: clamp(16px, 2vw, 22px);
+  padding-inline: clamp(18px, 2.6vw, 30px);
+  box-shadow:
+    rgba(0,0,0,.05)  0 1px 2px 0,
+    rgba(0,0,0,.045) 0 8px 24px -10px;
+}
+.band .faq__item { background: transparent; }
+.faq__item + .faq__item { border-top: 1px solid var(--color-divider); }
+
+.faq__q {
+  cursor: pointer; width: 100%; text-align: left;
+  display: flex; align-items: center; gap: 20px;
+  min-height: 48px; padding: 24px 0;
+  background: transparent; border: 0; color: var(--color-text);
+  font-family: var(--font-heading); font-weight: 600;
+  font-size: clamp(16px, 2.1vw, 18.5px); letter-spacing: -0.02em;
+  transition: color .2s ease;
+}
+.faq__q:hover { color: var(--color-accent); }
+.faq__q > span:first-child { flex: 1; }
+
+/* Das Pluszeichen ist gezeichnet, nicht getippt: zwei Balken von 1,5 px.
+   Das Glyph "+" aus der Schrift sitzt nie mittig im Kaestchen und wird
+   beim Drehen sichtbar schief. font-size: 0 blendet das Zeichen aus dem
+   Markup aus, ohne es zu entfernen. */
+.faq__icon {
+  position: relative; flex: none;
+  width: 18px; height: 18px; font-size: 0;
+  color: var(--color-accent);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1);
+}
+.faq__icon::before,
+.faq__icon::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%;
+  height: 1.5px; border-radius: 2px; background: currentColor;
+  transform: translateY(-50%);
+}
+.faq__icon::after { transform: translateY(-50%) rotate(90deg); }
+/* 135 statt 45 Grad: ergibt dasselbe Kreuz, dreht aber weiter und
+   fuehlt sich dadurch nach einer Bewegung an statt nach einem Sprung. */
+.faq__item[data-open="true"] .faq__icon { transform: rotate(135deg); }
+@media (prefers-reduced-motion: reduce) {
+  .faq__icon { transition: none; }
+}
+.faq__a {
+  display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows .34s cubic-bezier(.2,.7,.2,1), opacity .3s ease;
+}
+.faq__item[data-open="true"] .faq__a { grid-template-rows: 1fr; opacity: 1; }
+/* Eine zugeklappte Antwort ist nur optisch weg: grid-template-rows: 0fr macht
+   sie unsichtbar, Screenreader lesen sie trotzdem vor. Aus dem Weg geräumt
+   wird sie deshalb per inert in js/app.js — nicht hier über visibility, damit
+   die Zugänglichkeit nicht davon abhängt, ob ein CSS-Übergang durchläuft. */
+.faq__a > div { overflow: hidden; }
+.faq__a p {
+  font-size: 15px; line-height: 1.68; max-width: 56ch; margin: 0 0 26px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+/* ---------- Klartext (Über mich) ----------
+   Eigener Baustein, bewusst NICHT derselbe wie die Leistungsfelder: sonst
+   sieht der ehrlichste Abschnitt der Seite aus wie eine Leistungsliste. Hier: getönte Fläche, große Ziffern, Unterschrift —
+   die Anmutung einer unterschriebenen Zusage statt einer Aufzählung. */
+.klartext {
+  position: relative;
+  padding: clamp(26px, 4vw, 48px);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 28%, transparent);
+}
+/* Feste zwei Spalten statt auto-fit: bei vier Punkten ergäbe auto-fit je nach
+   Breite ein unausgewogenes 3+1. Vier Zusagen wollen ein 2×2. */
+.klartext__grid {
+  display: grid; gap: clamp(24px, 3.4vw, 40px);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 680px) {
+  .klartext__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.klartext__item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start; }
+.klartext__no {
+  font-family: var(--font-heading); font-weight: 500; font-size: 30px; line-height: 1;
+  letter-spacing: -0.03em; color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--color-accent) 70%, transparent);
+}
+.klartext__item h3 {
+  font-size: clamp(17px, 2vw, 19px); line-height: 1.3; margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+.klartext__item p {
+  font-size: 14px; line-height: 1.65; margin: 0;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+.klartext__sign {
+  display: flex; align-items: center; gap: 14px;
+  margin: clamp(28px, 3.4vw, 40px) 0 0; padding-top: 20px;
+  background: linear-gradient(to right, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent) no-repeat top / 100% 1px;
+  font-size: 13.5px; color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+.klartext__sign b {
+  font-family: var(--font-heading); font-weight: 500; font-size: 15px;
+  color: var(--color-accent); letter-spacing: 0.01em;
+}
+.klartext__sign img { width: 26px; height: 20px; flex: none; opacity: .8; }
+
+
+/* ---------- Leistungen (nur leistungen.html) ----------
+
+   Vorher waren das sechs .pledge-Zeilen: Balken, Zeile, Absatz — sechsmal
+   dieselbe Form untereinander. Nichts daran war falsch, aber das Auge
+   bekommt in einem ganzen Abschnitt keinen einzigen Haltepunkt, und ohne
+   Haltepunkt liest niemand bis Nummer sechs.
+
+   Die Felder sind deshalb verschieden gross, und die Groesse sagt etwas:
+   das breiteste Feld ist die Kernleistung, das ganz durchgehende unten die
+   Betreuung, die nach dem Livegang weiterlaeuft. Wer nur die grossen
+   Flaechen ueberfliegt, hat trotzdem das Wichtigste.
+
+   Der alte Baustein .pledge ist damit ersatzlos weg: ausser leistungen.html
+   hat ihn keine Seite benutzt. */
+
+.kann { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.kann__feld {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: clamp(20px, 2.4vw, 30px);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform .45s cubic-bezier(.2,.7,.2,1), box-shadow .45s cubic-bezier(.2,.7,.2,1);
+}
+.kann__feld:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.kann__feld--gross { grid-column: span 2; background: var(--color-bg); box-shadow: var(--shadow-md); }
+.kann__feld--breit {
+  grid-column: 1 / -1; background: var(--color-bg); box-shadow: var(--shadow-md);
+  flex-direction: row; align-items: center; gap: clamp(20px, 4vw, 48px);
+}
+
+.kann__claim { font-family: var(--font-heading); font-weight: 500; font-size: clamp(16px, 1.9vw, 18px); letter-spacing: -0.01em; margin: 0; }
+.kann__feld--gross .kann__claim { font-size: clamp(20px, 2.6vw, 26px); letter-spacing: -0.02em; }
+.kann__feld p { font-size: 13.5px; line-height: 1.65; margin: 0; color: color-mix(in srgb, var(--color-text) 68%, transparent); }
+.kann__feld--gross p { font-size: clamp(14px, 1.6vw, 15.5px); }
+
+/* Der konkrete Satz steht in der Serife und traegt einen Haarstrich links:
+   dasselbe Gold wie die Ablauf-Linie, damit die Seite eine Handschrift
+   behaelt statt zweier unabhaengiger Bausteine. */
+.kann__konkret {
+  margin: 4px 0 0; padding-left: 16px;
+  border-left: 2px solid var(--color-accent-300);
+  font-family: var(--font-display); font-style: italic;
+  font-size: clamp(15px, 1.8vw, 17px); line-height: 1.45;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+.kann__preis { flex: none; display: flex; flex-direction: column; gap: 2px; }
+.kann__preis b { font-family: var(--font-heading); font-weight: 500; font-size: clamp(30px, 4.4vw, 42px); letter-spacing: -0.03em; line-height: 1; color: var(--color-accent); }
+.kann__preis span { font-size: 12px; color: color-mix(in srgb, var(--color-text) 58%, transparent); }
+.kann__feld--breit > div { display: flex; flex-direction: column; gap: 8px; }
+
+@media (max-width: 900px) {
+  .kann { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kann__feld--gross, .kann__feld--breit { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .kann { grid-template-columns: 1fr; }
+  .kann__feld--breit { flex-direction: column; align-items: flex-start; gap: 14px; }
+}
+
+/* ---------- Abschluss (nur index.html) ----------
+   Dritter Baustein der Familie. Die Startseite hatte vorher dieselbe
+   .contact-Fläche wie kontakt.html — zweimal derselbe Kasten im selben
+   Durchgang. Hier stattdessen editorial: keine Fläche, nur Haarlinien
+   oben und unten, rechts drei knappe Fakten, am Ende die Unterschrift. */
+.abschluss {
+  display: grid; gap: clamp(28px, 4vw, 56px); grid-template-columns: 1fr;
+  padding-block: clamp(30px, 4vw, 46px);
+  background:
+    linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat top / 100% 1px,
+    linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;
+}
+@media (min-width: 900px) {
+  .abschluss { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); }
+  .abschluss__sign { grid-column: 1 / -1; }
+}
+.abschluss h2 { font-size: clamp(26px, 3.6vw, 36px); line-height: 1.12; margin: 0 0 14px; max-width: 20ch; }
+.abschluss__lead p { font-size: 15.5px; line-height: 1.65; max-width: 42ch; margin: 0 0 24px; }
+.abschluss__facts { margin: 0; display: flex; flex-direction: column; }
+.abschluss__fact {
+  padding: 16px 0;
+  background: linear-gradient(to right, var(--color-divider), transparent) no-repeat top / 100% 1px;
+}
+.abschluss__fact:first-child { padding-top: 0; background-image: none; }
+.abschluss__facts dt {
+  font-family: var(--font-heading); font-weight: 500; font-size: 12px;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-accent);
+  margin-bottom: 5px;
+}
+.abschluss__facts dd {
+  margin: 0; font-size: 13.5px; line-height: 1.6; max-width: 40ch;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.abschluss__sign {
+  display: flex; align-items: center; gap: 14px; margin: 0;
+  font-size: 13.5px; color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+.abschluss__sign b {
+  font-family: var(--font-heading); font-weight: 500; font-size: 15px;
+  color: var(--color-accent); letter-spacing: 0.01em;
+}
+.abschluss__sign img { width: 26px; height: 20px; flex: none; opacity: .8; }
+
+/* ---------- Kontakt ---------- */
+
+.contact {
+  position: relative; overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(150deg, var(--color-section), var(--color-bg) 78%);
+  padding: clamp(32px, 5vw, 64px);
+  display: grid; gap: clamp(28px, 4vw, 56px); grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  align-items: start;
+}
+.contact__glow {
+  position: absolute; top: -80px; right: -60px; width: 300px; height: 300px;
+  border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--color-section-glow) 55%, transparent) 0%,
+    color-mix(in srgb, var(--color-section-glow) 20%, transparent) 45%,
+    transparent 74%);
+}
+.contact__col { position: relative; }
+.contact h2 { font-size: clamp(27px, 3.8vw, 38px); line-height: 1.1; margin-bottom: 16px; }
+.contact__lead { font-size: 15.5px; line-height: 1.65; max-width: 42ch; margin: 0 0 24px; }
+.contact__points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.contact__points li { display: flex; gap: 10px; font-size: 13.5px; color: color-mix(in srgb, var(--color-text) 78%, transparent); }
+.contact__points li::before { content: "—"; color: var(--color-accent); }
+/* Ablaufvariante auf der Kontaktseite: Zeitmarke links, Inhalt rechts.
+   Ersetzt den früheren Aufzählungstext, der wortgleich auf der Startseite stand. */
+.contact__points--plan { gap: 14px; }
+.contact__points--plan li { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: baseline; }
+.contact__points--plan li::before { content: none; }
+.contact__points--plan b {
+  font-family: var(--font-heading); font-weight: 500; font-size: 12px;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-accent);
+}
+@media (max-width: 520px) {
+  .contact__points--plan li { grid-template-columns: 1fr; gap: 3px; }
+}
+.contact__col a { display: inline-flex; align-items: center; min-height: 44px; }
+.form {
+  position: relative; display: flex; flex-direction: column; gap: 12px;
+  padding: clamp(20px, 2.6vw, 28px); border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent); box-shadow: var(--shadow-md);
+}
+.form label { display: block; font-size: 12px; margin-bottom: 5px; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+/* „freiwillig" steht im Label, nicht als Sternchen-Legende darunter —
+   so weiß man es beim Lesen des Feldes, nicht erst danach.
+   52 % ist der leiseste Ton, der bei 12px noch über 4,5:1 liegt (wie .muted-3). */
+.form__opt { color: color-mix(in srgb, var(--color-text) 52%, transparent); }
+.form input, .form textarea {
+  width: 100%; min-height: 44px; padding: 10px 12px;
+  font: inherit; font-size: 14px; color: var(--color-text);
+  background: var(--color-bg); border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.form textarea { min-height: 92px; resize: vertical; }
+.form input:focus-visible, .form textarea:focus-visible { border-color: var(--color-accent); }
+.form__note { font-size: 11.5px; margin: 0; transition: color .2s ease; }
+.form__note--error { color: var(--color-accent); }
+.form__note--error a { color: var(--color-accent); }
+.form .btn { min-height: 48px; margin-top: 4px; font-size: 14.5px; }
+/* Honeypot: aus dem Layout und für Screenreader/Tastatur unerreichbar */
+.form__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+/* Erfolgsmeldung, die das Formular nach dem Absenden ersetzt */
+.form__done { display: flex; flex-direction: column; gap: 8px; padding: clamp(8px, 2vw, 20px) 0; }
+.form__done h3 { font-family: var(--font-heading); font-weight: 500; font-size: 19px; margin: 0; }
+.form__done p { font-size: 14px; line-height: 1.6; margin: 0; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+
+/* ---------- Fußzeile ---------- */
+
+.footer {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px;
+  padding-top: clamp(28px, 4vw, 40px); padding-bottom: clamp(40px, 5vw, 56px);
+  background-image: linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent);
+  background-repeat: no-repeat; background-position: top; background-size: 100% 1px;
+}
+.footer__brand { font-family: var(--font-heading); font-weight: 500; font-size: 15px; margin-right: auto; }
+.footer a {
+  font-size: 12.5px; text-decoration: none;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  /* Auf dem Handy sind das die einzigen Links im Fuss - sie brauchen
+     eine Flaeche, die man mit dem Daumen trifft. */
+  display: inline-flex; align-items: center; min-height: 44px;
+}
+.footer a:hover { color: var(--color-accent); }
+/* Impressum und Datenschutz heben sich vom Rest des Footers ab: Pflichtangaben
+   müssen „leicht erkennbar" sein, nicht im Kleingedruckten verschwinden. */
+.footer a.footer__legal { color: var(--color-accent-300); }
+.footer a.footer__legal:hover { color: var(--color-accent); text-decoration: underline; }
+.footer a.footer__legal[aria-current="page"] { color: var(--color-text); }
+.footer__copy { font-size: 12.5px; color: color-mix(in srgb, var(--color-text) 52%, transparent); }
+
+/* ---------- Rechtstexte (eigene Seiten) ----------
+   Impressum und Datenschutz waren früher ein JS-Overlay. Sie sind jetzt
+   echte Seiten: eigene URL, ohne JavaScript erreichbar, verlinkbar —
+   so, wie § 5 DDG „unmittelbar erreichbar" verlangt. */
+
+.legal-doc { display: flex; flex-direction: column; gap: clamp(26px, 3.4vw, 38px); }
+.legal-doc h2 {
+  font-size: clamp(18px, 2.2vw, 21px); line-height: 1.25;
+  letter-spacing: -0.015em; margin: 0 0 10px;
+}
+.legal-doc p {
+  font-size: 14.5px; line-height: 1.7; margin: 0; max-width: 68ch;
+  white-space: pre-line;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+.legal-doc__back {
+  margin: clamp(34px, 4vw, 48px) 0 0; padding-top: 20px; font-size: 14px;
+  background: linear-gradient(to right, var(--color-divider), transparent) no-repeat top / 100% 1px;
+}
+.legal-doc__back a { text-decoration: none; }
+.legal-doc__back a:hover { text-decoration: underline; }
+
+/* ---------- Multi-Page: aktive Nav-Zeile ---------- */
+
+
+/* ---------- Availability-Badge ---------- */
+
+.avail {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  margin-bottom: 22px;
+}
+.avail__dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #7fd6a5;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #7fd6a5 22%, transparent);
+  animation: avail-pulse 2.4s ease-in-out infinite;
+}
+@keyframes avail-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, #7fd6a5 22%, transparent); }
+  50%      { box-shadow: 0 0 0 6px color-mix(in srgb, #7fd6a5 8%,  transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .avail__dot { animation: none; } }
+
+/* ---------- Hero-Fuß: Standort ---------- */
+
+.hero__meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+  margin-top: 30px; padding-top: 22px;
+  font-size: 12.5px; color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.hero__where { letter-spacing: 0.04em; }
+
+/* ---------- Marquee ---------- */
+
+.marquee {
+  overflow: hidden; margin-block: clamp(24px, 4vw, 44px);
+  padding-block: 20px; border-block: 1px solid var(--color-divider);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee__track {
+  display: flex; gap: 42px; width: max-content;
+  animation: marquee 44s linear infinite;
+  font-family: var(--font-heading); font-weight: 500;
+  font-size: clamp(18px, 2.4vw, 26px); letter-spacing: -0.01em;
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+}
+.marquee__track span { display: inline-flex; align-items: center; gap: 42px; }
+/* Trenner ist das eigene Monogramm statt eines generischen Sterns */
+.marquee__mark {
+  width: 0.62em; height: 0.5em; flex: none;
+  background-image: url('../assets/logo-mark.png');
+  background-size: contain; background-repeat: no-repeat; background-position: center;
+  opacity: 0.55;
+}
+@keyframes marquee { to { transform: translateX(calc(-50% - 21px)); } }
+@media (prefers-reduced-motion: reduce) { .marquee__track { animation: none; } }
+
+/* ---------- Kurzer Seiten-Hero für Unterseiten ---------- */
+
+.page-hero {
+  padding-top: clamp(26px, 6vw, 72px);
+  padding-bottom: clamp(20px, 3vw, 32px);
+}
+/* Die Überschrift ist auf den Unterseiten der Hauptblickfang und darf
+   größer stehen als auf der Startseite, wo der Website-Check daneben sitzt. */
+.page-hero h1 { font-size: clamp(33px, 5.6vw, 64px); max-width: 18ch; }
+.page-hero p { max-width: 52ch; margin-top: 20px; font-size: 16.5px; line-height: 1.6; }
+
+/* ---------- Karten-Übersicht (Startseite) ---------- */
+
+.overview { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); margin-top: 34px; }
+.overview__card {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: clamp(20px, 2.4vw, 26px);
+  border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm);
+  text-decoration: none; color: var(--color-text);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.overview__card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); color: var(--color-text); }
+.overview__no  { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--color-accent); }
+.overview__ttl { font-family: var(--font-heading); font-weight: 500; font-size: 18px; letter-spacing: -0.01em; }
+.overview__txt { font-size: 13.5px; line-height: 1.6; margin: 0; color: color-mix(in srgb, var(--color-text) 68%, transparent); }
+.overview__go  { font-size: 13px; color: var(--color-accent); margin-top: 6px; }
+
+/* ---------- Wortwoge (nur index.html) ----------
+   Vorbild ist eine Jitter-Animation, hier in CSS nachgebaut. Gemessen an
+   den Einzelbildern des Videos ist die Bewegung KEIN fester Versatz,
+   sondern ein Wechsel der Ausrichtung: in Ruhe stehen alle Woerter buendig
+   links, im Ausschlag buendig rechts. Kurze Woerter legen deshalb den
+   weitesten Weg zurueck - genau das gibt der Welle ihren Schwung.
+
+   text-align laesst sich nicht animieren, transform schon. Der Kniff:
+     .woge li   faehrt um translateX(100%)  - das sind 100 % der ZEILE,
+                also die volle Spaltenbreite, nach rechts.
+     .woge span faehrt um translateX(-100%) - das sind 100 % des WORTES,
+                also seine eigene Breite, zurueck.
+   Weil das span in der Zeile liegt, multiplizieren sich beide: die
+   Verschiebung betraegt Spaltenbreite minus Wortbreite. Das ist per
+   Definition rechtsbuendig - ohne eine einzige Zeile JavaScript und ohne
+   dass irgendwo eine Breite bekannt sein muss.
+
+   Angenehmer Nebeneffekt: waehrend der Bewegung wird die Schrift schwerer
+   und damit breiter. Da sich translateX(-100%) immer auf die AKTUELLE
+   Wortbreite bezieht, bleibt die rechte Kante trotzdem exakt sitzen.
+
+   Zur Schriftstaerke: fonts/fonts.css liefert Inter als Variable Font mit
+   dem Bereich 400-700, deshalb laesst sich font-weight stufenlos
+   animieren. Mit statischen Schnitten wuerde es springen.
+
+   Zum Kontrast: der gedimmte Zustand ist mit Absicht kein blasses Grau.
+   Diese Woerter sind Inhalt, keine Deko - sie muessen auch dann lesbar
+   sein, wenn die Welle gerade woanders ist. Beide Zustaende liegen ueber
+   4,5:1. */
+.woge {
+  list-style: none; margin: clamp(28px, 4vw, 44px) 0 0; padding: 0;
+  /* Die Zeile steht im Ausschlag rechts ausserhalb der Spalte. Ohne dies
+     bekaeme die Seite eine waagerechte Bildlaufleiste. clip statt hidden,
+     damit senkrecht nichts abgeschnitten wird und kein Scrollcontainer
+     entsteht. */
+  overflow-x: clip; overflow-y: visible;
+
+  /* 30.08.2026: auf dem Handy sah die rechte Kante im Ausschlag rasiert aus.
+     Grund ist nicht die Layoutbreite (die endet exakt auf der Kante),
+     sondern die Farbe des letzten Buchstabens: negatives Tracking von
+     0,03em zieht den Kasten hinter die Schrift zurueck, und die rechte
+     Seitenlage der fetten Schnitte ragt noch einmal darueber hinaus.
+     overflow-clip-margin schiebt die Beschnittkante um 12 px nach aussen,
+     OHNE eine Bildlaufleiste zu erzeugen - das kann nur der Beschnitt,
+     nicht ein Ueberlauf. Aeltere iOS-Safari ignorieren die Zeile, deshalb
+     bleibt das Polster unten als zweite Sicherung stehen. */
+  overflow-clip-margin: 12px;
+
+  /* Reserve nach rechts. Gemessen: im Ausschlag lag die rechte Wortkante
+     bei exakt 340,00 px und damit GENAU auf der Beschnittkante. Bei
+     krummen Geraetepixeln (viele Handys rechnen mit 2,75x) rasiert der
+     Beschnitt dann die letzte Pixelspalte — auf dem Handy sah das aus wie
+     ein abgeschnittener Buchstabe.
+
+     Das Polster wirkt an zwei Stellen gleichzeitig: es schiebt die
+     Beschnittkante nach aussen UND macht das <li> genauso viel schmaler,
+     wodurch translateX(100%) entsprechend kuerzer ausfaellt. Die Woerter
+     bleiben also buendig an der Textspalte und haben trotzdem Luft.
+     Als clamp, weil die Schrift selbst von 26 auf 58 px mitwaechst. */
+  padding-right: clamp(6px, 0.55vw, 8px);
+}
+.woge li {
+  font-family: var(--font-heading);
+  font-size: clamp(26px, 5.4vw, 58px);
+  line-height: 1.14; letter-spacing: -0.03em;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  animation: woge-zeile 3.2s cubic-bezier(.45, 0, .2, 1) infinite;
+  animation-delay: calc(var(--i) * 0.1s);
+}
+.woge li span {
+  display: inline-block; white-space: nowrap;
+  animation: woge-wort 3.2s cubic-bezier(.45, 0, .2, 1) infinite;
+  animation-delay: calc(var(--i) * 0.1s);
+}
+@keyframes woge-zeile {
+  0%, 100% {
+    transform: translateX(0);
+    font-weight: 500;
+    color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  }
+  30%, 60% {
+    transform: translateX(100%);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+}
+@keyframes woge-wort {
+  0%, 100% { transform: translateX(0); }
+  30%, 60% { transform: translateX(-100%); }
+}
+/* Ohne Bewegung bleibt die Liste links und lesbar stehen - der Inhalt geht
+   nicht verloren, nur die Welle. */
+@media (prefers-reduced-motion: reduce) {
+  .woge li, .woge li span {
+    animation: none; transform: none;
+  }
+  .woge li { font-weight: 600; color: var(--color-text); }
+}
+
+/* ---------- Leck (nur probleme.html) ----------
+   Umbau 23.08.2026 auf Apple-Look. Vorher lagen die vier Probleme direkt
+   auf Weiss, getrennt durch eine Haarlinie. Jetzt: weisse Karten mit
+   grossem Radius auf einer grauen Flaeche (#f5f5f7). Die Trennung macht
+   der Abstand, nicht der Strich — das ist der Kern dieses Looks. Dazu
+   grosse, sehr eng laufende Ueberschriften, keine Versalien, Chips ohne
+   Rahmen.
+
+   Die Grafiken bleiben Inline-SVG in var(--color-accent): keine Bilddatei,
+   keine Bibliothek, scharf in jeder Groesse, und sie gehen bei einem
+   Themenwechsel automatisch mit. */
+
+/* Graue Flaeche, auf der die Karten liegen. Zieht sich ueber die volle
+   Breite — deshalb sitzt .wrap INNEN, nicht aussen. */
+.leck-band {
+  background: #f5f5f7;
+  padding-block: clamp(26px, 4vw, 56px);
+  margin-top: clamp(22px, 4vw, 44px);
+}
+.leck-liste { display: grid; gap: clamp(14px, 1.6vw, 22px); }
+
+.leck {
+  display: grid; gap: clamp(26px, 4vw, 56px);
+  grid-template-columns: 1fr;
+  align-items: center;
+  background: #fff;
+  border-radius: clamp(20px, 2.4vw, 28px);
+  padding: clamp(26px, 4vw, 54px);
+  /* Zwei Lagen: eine Haarkante, damit die Karte auf dem Grau nicht
+     ausfranst, und ein sehr weicher, weit gestreuter Schatten darunter. */
+  box-shadow:
+    rgba(0,0,0,.05) 0 1px 2px 0,
+    rgba(0,0,0,.045) 0 10px 30px -12px;
+}
+@media (min-width: 900px) {
+  .leck { grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); }
+  /* Jede zweite Karte gespiegelt, damit die Seite nicht in zwei Saeulen
+     zerfaellt. order statt row-reverse: so bleibt die Lesereihenfolge
+     fuer Screenreader die des Quelltexts. */
+  .leck:nth-child(even) .leck__text { order: 2; }
+}
+
+/* Branchenzeile: bei Apple stehen solche Zeilen in normaler Schreibweise,
+   nicht in gesperrten Versalien. */
+.leck__branche {
+  display: block; font-size: 12.5px; font-weight: 500; letter-spacing: 0;
+  text-transform: none; color: var(--color-accent); margin-bottom: 12px;
+}
+.leck__text h2 {
+  font-size: clamp(26px, 3.4vw, 40px); letter-spacing: -0.035em;
+  margin: 0 0 14px; max-width: 15ch;
+}
+/* Fuer die vierte Karte: der Satz ist laenger, also faellt die Schrift
+   eine Stufe kleiner und darf breiter laufen. */
+.leck--kompakt .leck__text h2 {
+  font-size: clamp(22px, 2.5vw, 30px); max-width: 22ch;
+}
+.leck__satz { font-size: 16.5px; line-height: 1.55; margin: 0 0 30px; max-width: 36ch; }
+
+/* ---------- Der Loesungsblock ----------
+   Davids Wunsch: die Chips sind SEINE Loesungen und sollen auch so
+   angeschrieben sein. Ohne die Zeile las man drei lose Begriffe. */
+.loesung__titel {
+  display: flex; align-items: center; gap: 9px;
+  margin: 0 0 13px; font-size: 13px; font-weight: 500; color: #6b6b70;
+}
+.loesung__punkt {
+  width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 4px rgba(138, 90, 0, .16);
+}
+.leck__fix { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+/* Apple setzt solche Chips als graue Flaeche ohne Rahmen. Der Rahmen der
+   alten Fassung machte sie zu Knoepfen — sie sind aber nichts zum Klicken. */
+.leck__fix li {
+  font-size: 13.5px; line-height: 1.3; color: #1d1d1f;
+  padding: 9px 15px; border-radius: 100px;
+  background: #f5f5f7; border: 0;
+}
+
+
+/* ---------- Vorher/Nachher-Attrappen (nur probleme.html) ----------
+   Zwei Mini-Seiten aus HTML, keine Zeichnung. Eine SVG-Skizze aus grauen
+   Rechtecken kann den Unterschied gar nicht zeigen, um den es geht: der
+   steckt in Schrift, Zeilenabstand und Farbe, nicht in der Anordnung.
+
+   Die alte Seite ist bewusst mit Systemschriften gebaut. Times und Comic
+   Sans sind hier kein Versehen, sondern das Zitat: genau diese beiden
+   Schriften stehen auf den Seiten, die ersetzt werden sollen. */
+/* Auch auf dem Handy nebeneinander, nie untereinander. Vorher und Nachher
+   wirken nur im selben Blick; gestapelt muesste man sich das erste Bild
+   merken. Dass die Schrift bei 150 px Breite nicht mehr lesbar ist, macht
+   nichts: es geht um den Eindruck, nicht um den Text. */
+.vgl {
+  display: grid; gap: clamp(10px, 2vw, 22px);
+  grid-template-columns: 1fr 1fr;
+}
+.vgl__spalte { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.vgl__seite {
+  aspect-ratio: 3 / 4; overflow: hidden;
+  border-radius: 10px; container-type: inline-size;
+}
+.vgl__schild {
+  font-size: 12px; color: #757575; text-align: center;
+}
+.vgl__schild--alt { color: #8a8a8a; }
+
+/* --- alt --- */
+.vgl__seite--alt {
+  display: flex; flex-direction: column;
+  background: #d8d8e8;
+  border: 2px solid #9a9ab0;
+  border-radius: 4px;   /* runde Ecken gab es damals nicht */
+  font-family: "Times New Roman", Times, serif;
+  color: #000; line-height: 1.25;
+}
+.alt__kopf {
+  background: linear-gradient(#4a4a9c, #2c2c6e);
+  color: #fff; text-align: center; padding: 5cqw 3cqw 4cqw;
+}
+.alt__titel { font-size: 4.4cqw; font-weight: 700; }
+.alt__unter { font-size: 3cqw; font-style: italic; color: #d8d8f0; margin-top: 1cqw; }
+.alt__leiste {
+  background: #b8b8d0; border-block: 1px solid #7a7a96;
+  padding: 2cqw 3cqw; font-size: 3cqw; color: #00007f;
+  display: flex; flex-wrap: wrap; gap: 1.2cqw;
+}
+.alt__leiste span:not(:nth-child(even)) { text-decoration: underline; }
+.alt__body { flex: 1; background: #fffff0; padding: 3.5cqw; }
+/* Comic Sans plus Blinken plus Rot: das Signal, an dem jeder Besucher in
+   einer Sekunde erkennt, wie alt die Seite ist. */
+.alt__blink {
+  font-family: "Comic Sans MS", cursive; color: #c00000;
+  font-size: 3.8cqw; font-weight: 700; text-align: center; margin-bottom: 2.5cqw;
+}
+.alt__text { font-size: 3.1cqw; margin: 0 0 3cqw; text-align: justify; }
+.alt__tab {
+  width: 100%; border-collapse: collapse; font-size: 2.9cqw;
+  margin-bottom: 3cqw; background: #fff;
+}
+.alt__tab td { border: 2px outset #c0c0c0; padding: 1.2cqw 1.6cqw; }
+.alt__links { font-size: 3.1cqw; color: #00007f; margin: 0 0 3cqw; }
+.alt__links span { text-decoration: underline; }
+.alt__fuss {
+  border-top: 1px solid #c0c0c0; padding-top: 2cqw;
+  font-size: 2.6cqw; color: #555; text-align: center;
+}
+
+/* --- neu ---
+   War einmal eine nachgebaute Mini-Seite aus divs. Sie ist raus: eine
+   selbstgebaute Attrappe zeigt immer nur, was der Zeichner fuer modern
+   haelt, und liess sich nicht nachpruefen. Jetzt steht dort ein
+   Bildschirmfoto der Demo, die wirklich laeuft.
+   Aufnahme-Rezept: 900 px breit, Faktor 2, das Konzept-Band oben
+   abgeschnitten, ergibt genau 3:4. */
+img.vgl__seite--neu{
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 0;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #ececef, 0 10px 30px -18px rgba(40, 30, 10, .3);
+}
+
+.leck__bild { margin: 0; }
+.leck__bild > svg { width: 100%; height: auto; display: block; overflow: visible; }
+/* Bewusst nur DIREKTE Kinder: die kleine Lupe im Suchfeld ist ebenfalls
+   ein <svg> und wurde von der alten Regel auf 100 % Breite aufgeblasen. */
+.leck__bild figcaption {
+  margin-top: 18px; padding-top: 14px; font-size: 12.5px; line-height: 1.5;
+  border-top: 1px solid #ededed;
+}
+.leck__bild figcaption b {
+  font-family: var(--font-heading); font-weight: 600; letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+/* ---------- Gemeinsame Bausteine der Grafiken ---------- */
+.g-linie  { stroke: var(--color-divider); stroke-width: 1.5; fill: none; }
+.g-kante  { stroke: #d9d9dd; stroke-width: 1.5; fill: none; }
+.g-flaeche{ fill: #fff; stroke: #e3e3e7; stroke-width: 1.5; }
+.g-tinte  { fill: var(--color-text); }
+.g-grau   { fill: #c9c9ce; }
+.g-akzent { fill: var(--color-accent); }
+.g-akzent-linie { stroke: var(--color-accent); stroke-width: 2; fill: none; }
+.g-wash   { fill: var(--color-accent); opacity: .10; }
+.g-zahl {
+  font-family: var(--font-heading); font-weight: 600; letter-spacing: -0.04em;
+  fill: var(--color-text);
+}
+.g-label {
+  font-family: var(--font-body); font-size: 12.5px; fill: #5c5c5c;
+}
+/* #a8a8ae lag bei 2,37:1. Diese Beschriftungen sind Inhalt
+   ("Bewerbung", "Ihr Betrieb", "Alte Seite") und muessen lesbar sein.
+   Das Gedaempfte tragen jetzt die gestrichelten Umrisse, nicht die
+   Schrift. #74747a haelt 4,64:1 und wirkt trotzdem leiser als die
+   aktiven Beschriftungen in #5c5c5c. */
+.g-label--aus { fill: #74747a; }
+.g-geist { fill: none; stroke: #d3d3d8; stroke-width: 1.5; stroke-dasharray: 4 5; }
+.g-ring-akzent { fill: none; stroke: var(--color-accent); stroke-width: 2; }
+
+/* ---------- Bewegung in Grafik 1 ----------
+   Der Ball huepft gleichmaessig von Anzeige ueber Google zu "Ihre Seite"
+   — und faellt danach weg, statt bei "Bewerbung" anzukommen.
+
+   Warum zwei ineinanderliegende <g>: ein Bogen braucht in der Waagerechten
+   eine GLEICHMAESSIGE und in der Senkrechten eine BESCHLEUNIGTE Bewegung.
+   Eine einzelne translate-Animation kann pro Abschnitt aber nur EINE
+   Beschleunigung haben. Also traegt die aeussere Gruppe das X, die innere
+   das Y — jede mit eigener Kurve. Klassischer Trick aus dem Motion Design.
+
+   Ein Durchlauf dauert 6,6 s. Die Prozentwerte unten sind Anteile davon:
+   27 % = 1,78 s (Landung Google), 49 % = 3,23 s (Landung "Ihre Seite").
+   Die Ringe pulsen mit genau diesen Werten als animation-delay. */
+@media (prefers-reduced-motion: no-preference) {
+  .g-puls { animation: g-puls 2.6s ease-in-out infinite; transform-origin: center; }
+  @keyframes g-puls { 0%,100% { opacity: .25 } 50% { opacity: .6 } }
+
+  .hop-x { animation: hopX 6.6s linear infinite; }
+  .hop-y { animation: hopY 6.6s infinite; }
+  .hop-blende { animation: hopBlende 6.6s infinite; }
+  .g-spur { animation: gSpur 6.6s infinite; }
+  .g-landung {
+    fill: none; stroke: var(--color-accent); stroke-width: 2; opacity: 0;
+    transform-box: fill-box; transform-origin: 50% 50%;
+    animation: gLandung 6.6s ease-out infinite;
+  }
+
+  @keyframes hopX {
+    0%,  12%  { transform: translateX(0) }
+    27%, 34%  { transform: translateX(138px) }
+    49%, 58%  { transform: translateX(276px) }
+    74%, 84%  { transform: translateX(360px) }
+    86%,100%  { transform: translateX(0) }
+  }
+  /* Steigen: ease-out (wird langsamer). Fallen: ease-in (wird schneller).
+     Genau das laesst es nach Schwerkraft aussehen. */
+  @keyframes hopY {
+    0%,  12%  { transform: translateY(0);     animation-timing-function: cubic-bezier(.18,.72,.4,1) }
+    19.5%     { transform: translateY(-48px); animation-timing-function: cubic-bezier(.6,0,.85,.3) }
+    27%, 34%  { transform: translateY(0);     animation-timing-function: cubic-bezier(.18,.72,.4,1) }
+    41.5%     { transform: translateY(-48px); animation-timing-function: cubic-bezier(.6,0,.85,.3) }
+    49%, 58%  { transform: translateY(0);     animation-timing-function: cubic-bezier(.55,0,.9,.35) }
+    74%, 86%  { transform: translateY(112px) }
+    88%,100%  { transform: translateY(0) }
+  }
+  /* Der Ball verschwindet im Fall — die Bewerbung kommt nie an. Zwischen
+     85 % und 95 % springt er unsichtbar auf Feld eins zurueck. */
+  @keyframes hopBlende {
+    0%,  70%  { opacity: 1 }
+    80%, 90%  { opacity: 0 }
+    97%,100%  { opacity: 1 }
+  }
+  @keyframes gSpur {
+    0%,  56%  { opacity: .4 }
+    70%, 82%  { opacity: 1 }
+    92%,100%  { opacity: .4 }
+  }
+  @keyframes gLandung {
+    0%       { opacity: 0;  transform: scale(.82) }
+    7%       { opacity: .55; transform: scale(1) }
+    26%,100% { opacity: 0;  transform: scale(1.6) }
+  }
+
+  /* Die Schlieren IM Metall drehen sich, der Lichtreflex nicht — der
+     bleibt stehen, wo die Lampe steht. Dreht man beides mit, sieht es
+     sofort nach aufgemaltem Muster aus statt nach poliertem Metall.
+
+     transform-origin in Bildpunkten des viewBox-Rasters: 52/78 ist die
+     Ruheposition der Kugel. Die Sprunggruppen darueber verschieben das
+     Ganze, deshalb dreht sie trotzdem immer um ihre eigene Mitte. */
+  .kugel-wirbel {
+    transform-origin: 52px 78px;
+    animation: kugelDreh 9s linear infinite;
+  }
+  @keyframes kugelDreh { to { transform: rotate(360deg) } }
+}
+
+/* ---------- Suchtreffer-Nachbau (Grafik 2) ----------
+   Als HTML statt SVG: hier ist alles Text. In SVG waere jede Zeile eine
+   <text> mit fester Position — nicht umbrechbar, nicht markierbar, und
+   auf dem Handy zu klein. Sieht trotzdem aus wie die anderen drei. */
+.suche {
+  background: #fff; border: 1px solid #e8e8ed;
+  border-radius: 22px; padding: clamp(14px, 2vw, 20px);
+  box-shadow: rgba(0,0,0,.04) 0 6px 20px -10px;
+}
+.suche__zeile {
+  display: flex; align-items: center; gap: 10px;
+  background: #f5f5f7; border-radius: 100px;
+  padding: 11px 16px; font-size: 14px; color: #3f3f45;
+  margin-bottom: 6px;
+}
+.suche__lupe { flex: 0 0 auto; }
+.treffer { display: flex; gap: 13px; align-items: flex-start; padding: 13px 6px; }
+.treffer + .treffer { border-top: 1px solid #f0f0f2; }
+.treffer__rang {
+  width: 26px; height: 26px; border-radius: 50%; flex: 0 0 auto;
+  background: #1d1d1f; color: #fff;
+  font-size: 13px; font-weight: 600; line-height: 26px; text-align: center;
+}
+.treffer:first-of-type .treffer__rang { background: var(--color-accent); }
+.treffer__inhalt { display: block; min-width: 0; }
+/* display:block, weil <span> sonst inline bleibt: die Zeilen wuerden
+   hintereinander laufen und margin-top waere wirkungslos. */
+.treffer__name { display: block; font-family: var(--font-heading); font-weight: 600; font-size: 15.5px; letter-spacing: -0.015em; }
+.treffer__meta { display: block; font-size: 12.5px; line-height: 1.45; color: #6b6b70; margin-top: 3px; }
+.treffer__stern { color: #a6772a; }
+.suche__schnitt { margin: 12px 6px; border-top: 1px dashed #d5d5da; }
+.treffer--aus .treffer__rang {
+  background: #fff; border: 1px dashed #c9c9ce; color: #74747a;
+  font-weight: 500; line-height: 24px;
+}
+.treffer--aus .treffer__name { color: #74747a; font-weight: 500; }
+
+/* ---------- Scroll-Animation ---------- */
+
+.is-hidden { opacity: 0; transform: translateY(26px); will-change: opacity, transform; }
+.reveal-anim { transition: opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .is-hidden { opacity: 1; transform: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Arbeiten / Portfolio
+   arbeiten.html, die drei Projektseiten und der Ausschnitt auf index.html
+
+   Die Vorschauen sind KEINE Bilddateien, sondern nachgebaute Mini-Seiten
+   aus divs. Gruende, dieselben wie bei den Grafiken auf probleme.html:
+   scharf auf jedem Bildschirm, ein paar hundert Byte statt Screenshots,
+   und sie gehen bei einer Farbaenderung automatisch mit. Ein Screenshot
+   einer Seite, die es noch nicht gibt, waere ausserdem gelogen.
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* Hier lagen bis zum 30.08.2026 der Browser-Rahmen, die Bausteine der
+   Mini-Seiten (.mockup, .mini__*, .handy) und die Projektkarte: rund 150
+   Zeilen fuer nachgebaute Vorschauen aus divs. Sie sind restlos
+   unbenutzt, seit arbeiten.html echte Bildschirmfotos zeigt und der
+   Arbeiten-Ausschnitt von der Startseite genommen wurde.
+   Falls die Attrappen je zurueckkommen sollen: in der Versionsgeschichte
+   dieses Ordners oder in servato-studio-archiv nachsehen. */
+
+/* ---------- Hinweis: Konzeptprojekt ----------
+   Steht auf jeder Projektseite und auf der Uebersicht. Muss auffallen,
+   ohne wie eine Warnung auszusehen: gedeckte Flaeche, keine Signalfarbe. */
+.konzept {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 8px 15px; border-radius: 100px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  font-size: 12.5px; font-weight: 500;
+}
+.konzept::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--color-accent); flex: none;
+}
+.konzept--block { margin-bottom: 18px; }
+
+/* ---------- Projektseite ---------- */
+.fall { display: grid; gap: clamp(22px, 3vw, 30px); grid-template-columns: 1fr; }
+@media (min-width: 860px) { .fall { grid-template-columns: repeat(3, 1fr); } }
+.fall__teil h3 {
+  font-family: var(--font-heading); font-weight: 600;
+  font-size: 17px; letter-spacing: -0.025em; margin: 0 0 8px;
+}
+.fall__teil p { font-size: 14.5px; line-height: 1.65; margin: 0; max-width: 38ch; }
+
+/* Desktop und Handy nebeneinander */
+.ansichten {
+  display: grid; gap: clamp(20px, 3vw, 34px);
+  grid-template-columns: 1fr; align-items: end;
+  margin-top: clamp(26px, 4vw, 40px);
+}
+@media (min-width: 820px) { .ansichten { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
+.ansichten figcaption { font-size: 12.5px; margin-top: 12px; }
+.ansichten figure { margin: 0; }
+
+/* Kompakte Karte fuer den Ausschnitt auf der Startseite: ohne Beschreibung,
+   ohne Tags, ohne Knopf. Nur Vorschau, Branche und Name. */
+.arbeiten--kompakt { margin-top: clamp(24px, 3vw, 36px); }
+.projekt--kompakt .projekt__text { padding: clamp(14px, 1.5vw, 18px) 6px 4px; }
+.projekt--kompakt .projekt__branche { margin-bottom: 5px; }
+.projekt--kompakt .projekt__name { font-size: clamp(17px, 1.9vw, 19px); margin-bottom: 0; }
+
+/* ======================================================================
+   Schaufenster - die Arbeiten als echte Bildschirmfotos
+   ======================================================================
+   Frueher standen hier nachgebaute Attrappen aus grauen Balken. Jetzt
+   liegt ein echtes Foto der jeweiligen Startseite in der Karte: 1440 x 900
+   aus dem Browser, das Konzept-Band oben abgeschnitten.
+
+   Die Karten sind bewusst KEINE Links. Wer hier steht, soll sehen, wie
+   die Arbeit aussieht - nicht in drei Unterseiten weitergeschickt werden.
+   Deshalb figure/figcaption statt <a>. */
+
+.schaufenster {
+  display: grid;
+  gap: clamp(30px, 4.5vw, 64px);
+  grid-template-columns: 1fr;
+  margin-top: clamp(30px, 4vw, 48px);
+}
+
+.stueck { margin: 0; }
+
+.stueck__bild {
+  border-radius: clamp(14px, 1.6vw, 20px);
+  overflow: hidden;
+  background: #f0f0f2;
+  /* Der Rahmen haelt das Foto von der hellen Flaeche ab, ohne zu kasteln */
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .07),
+    rgba(0, 0, 0, .05) 0 1px 2px 0,
+    rgba(0, 0, 0, .07) 0 20px 44px -20px;
+}
+.stueck__bild img {
+  display: block;
+  width: 100%; height: auto;
+}
+
+.stueck__text {
+  display: grid;
+  /* Nummer links, Text rechts - die Nummer laeuft ueber beide Zeilen */
+  grid-template-columns: auto 1fr;
+  column-gap: clamp(14px, 1.6vw, 20px);
+  align-items: baseline;
+  padding: clamp(16px, 2vw, 22px) 2px 0;
+}
+
+.stueck__nr {
+  grid-row: 1 / span 3;
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent);
+  padding-top: 2px;
+}
+
+.stueck__branche {
+  grid-column: 2;
+  font-size: 12.5px; font-weight: 500;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: #6b6b70;
+}
+
+.stueck__name {
+  grid-column: 2;
+  font-size: clamp(20px, 2.4vw, 26px);
+  letter-spacing: -0.02em;
+  margin: 6px 0 0;
+}
+
+.stueck__satz {
+  grid-column: 2;
+  font-size: 15px; line-height: 1.6;
+  margin: 8px 0 0;
+  max-width: 62ch;
+}
+
+/* Bewusst nur EINE Spalte, auch auf breiten Schirmen. Drei Projekte in
+   zwei Spalten lassen einen Platz leer; ausserdem ist ein Bildschirmfoto
+   erst ab einer gewissen Groesse wirklich lesbar. Lieber drei grosse
+   Karten untereinander als sechs halbe Versprechen. */
+.schaufenster { max-width: 1000px; }
+
+/* Die kompakte Reihe auf der Startseite: drei nebeneinander, ohne Satz.
+   Sie ist ein Vorgeschmack, nicht das Portfolio - deshalb darf sie die
+   volle Breite nutzen und kleiner bleiben. */
+.schaufenster--kompakt {
+  max-width: none;
+  gap: clamp(20px, 2.4vw, 30px);
+}
+@media (min-width: 760px) {
+  .schaufenster--kompakt { grid-template-columns: repeat(3, 1fr); }
+  .schaufenster--kompakt .stueck__name { font-size: clamp(16px, 1.8vw, 19px); }
+  .schaufenster--kompakt .stueck__text { padding-top: clamp(12px, 1.4vw, 16px); }
+}

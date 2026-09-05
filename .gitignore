@@ -1,0 +1,11 @@
+# Windows / macOS Systemdateien
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Netlify-Arbeitsordner
+.netlify/
+
+# Zips und Sicherungen, die nicht auf die Seite gehören
+*.zip
+*.bak

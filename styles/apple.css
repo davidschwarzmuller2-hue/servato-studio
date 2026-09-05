@@ -1,0 +1,558 @@
+/* ══════════════════════════════════════════════════════════════════════
+   Apple-Look — gilt fuer ALLE neun Seiten.
+   Angelegt am 23.08.2026, nachdem probleme.html allein umgestellt war
+   und der Rest der Seite daneben alt aussah.
+
+   Diese Datei wird als LETZTE geladen und ueberschreibt Tokens aus
+   hell.css. Weil site.css fast durchgehend mit var(--…) arbeitet, kippen
+   damit Radien, Schatten und Flaechen auf allen Seiten mit — ohne dass
+   jede Karte einzeln angefasst werden muss.
+
+   Drei Dinge machen den Look aus:
+   1. Groessere Radien und kaum sichtbare, weit gestreute Schatten.
+   2. Graue Vollbreiten-Baender (#f5f5f7) statt Trennlinien.
+   3. Farbe kommt aus EINER Quelle: dem Aurora-Schleier und der
+      Verlaufs-Schrift. Sonst bleibt alles Schwarz auf Weiss.
+   ═════════════════════════════════════════════════════════════════════ */
+
+body {
+  /* Apple rundet deutlich staerker als das alte 6/10/14. */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+
+  /* #f5f5f7 ist Apples Grau. Deutlicher als das alte #fafafa, das auf
+     Weiss praktisch verschwand — Karten hatten dadurch keine Kante. */
+  --color-surface: #f5f5f7;
+
+  /* Schatten: eine Haarkante plus eine sehr weit gestreute, sehr blasse
+     Lage. Kein Kissen, kein Rand — nur ein Anheben von der Flaeche. */
+  --shadow-sm:
+    rgba(0,0,0,.045) 0 1px 2px 0;
+  --shadow-md:
+    rgba(0,0,0,.05)  0 1px 2px 0,
+    rgba(0,0,0,.045) 0 8px 24px -10px;
+  --shadow-lg:
+    rgba(0,0,0,.05)  0 1px 2px 0,
+    rgba(0,0,0,.05)  0 14px 40px -14px;
+
+  /* ---------- Gold ist ab 23.08.2026 die Markenfarbe ----------
+     Violett ist raus: David kam damit nicht zurecht. Die Rampe steht
+     hier statt in hell.css, weil diese Datei zuletzt geladen wird und
+     hell.css unangetastet bleiben soll — so ist der Schritt zurueck
+     eine einzige geloeschte Zeile.
+
+     #8a5a00 haelt 5,93:1 auf Weiss und 5,44:1 auf dem grauen Band.
+     Reines Gelbgold (#c98a00) laege bei 2,95:1 und waere als Schrift
+     unbrauchbar — Gold muss auf hellem Grund immer tiefer gehen, als
+     man denkt. */
+  --color-accent:     #8a5a00;
+  --color-accent-2:   #b8860b;
+  --color-accent-100: #fdf7e8;
+  --color-accent-200: #f6e6c0;
+  --color-accent-300: #ddb968;
+  --color-accent-400: #b8860b;
+  --color-accent-500: #8a5a00;
+  --color-accent-600: #7c4a11;
+  --color-accent-700: #5a3508;
+
+  /* Die Aurora-Farben stehen hier einmal, damit Schleier und Knopf-Glow
+     garantiert dieselben benutzen. Heller als die Schriftfarben — im
+     Schleier duerfen sie das, als Schrift waeren sie unlesbar. */
+  --aurora-1: #d9a520;   /* Gold */
+  --aurora-2: #e07b39;   /* Bernstein */
+  --aurora-3: #c2410c;   /* Terrakotta */
+}
+
+/* ---------- Graues Vollbreiten-Band ----------
+   Zieht sich ueber die ganze Fensterbreite; der .wrap sitzt INNEN.
+   Ersetzt auf den Unterseiten die Haarlinien zwischen den Abschnitten. */
+.band {
+  background: #f5f5f7;
+  padding-block: clamp(34px, 5vw, 76px);
+  margin-block: clamp(20px, 3vw, 40px);
+}
+.band > .wrap > .section:first-child,
+.band .section { padding-block: 0; }
+
+/* ---------- Aurora ----------
+   Der alte .schein war EIN violetter Fleck — dieselbe Farbe wie der
+   Akzent, deshalb wirkte er wie ein Druckfehler statt wie Absicht.
+   Jetzt drei Farbfelder uebereinander, weich geblendet und in sehr
+   langsamer Bewegung. Das ist der Griff, den Apple bei Apple
+   Intelligence benutzt.
+
+   filter: blur() statt noch weicherer Farbverlaeufe — das erspart ein
+   halbes Dutzend Farbstopps und sieht an den Raendern sauberer aus. */
+.schein { position: relative; isolation: isolate; }
+.schein::before,
+.schein::after {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; top: 44%; translate: -50% -50%;
+  border-radius: 50%;
+}
+.schein::before {
+  width: min(1120px, 155%); aspect-ratio: 1.8 / 1;
+  filter: blur(44px);
+  background:
+    radial-gradient(38% 54% at 26% 44%, rgba(217, 165, 32, .34), transparent 68%),
+    radial-gradient(34% 48% at 66% 34%, rgba(224, 123, 57, .26), transparent 70%),
+    radial-gradient(42% 52% at 54% 74%, rgba(194, 65, 12, .16), transparent 70%);
+}
+/* Zweite, kleinere Lage. Sie laeuft gegenlaeufig — dadurch bekommt der
+   Schleier Tiefe statt nur hin und her zu wandern. */
+.schein::after {
+  width: min(760px, 110%); aspect-ratio: 1.5 / 1;
+  filter: blur(52px); opacity: .8;
+  background:
+    radial-gradient(46% 58% at 70% 56%, rgba(224, 123, 57, .20), transparent 72%),
+    radial-gradient(44% 56% at 32% 62%, rgba(217, 165, 32, .18), transparent 72%);
+}
+/* Engere Fassung, die sich an eine Karte schmiegt statt an eine Seite */
+.schein--karte::before { width: 132%; aspect-ratio: 1 / 1.2; top: 50%; }
+.schein--karte::after  { width: 96%;  aspect-ratio: 1 / 1.1; top: 52%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .schein::before { animation: auroraA 26s ease-in-out infinite alternate; }
+  .schein::after  { animation: auroraB 34s ease-in-out infinite alternate; }
+  /* translate bleibt fuer die Zentrierung zustaendig, transform fuer die
+     Bewegung — beide Eigenschaften werden nacheinander angewandt und
+     kommen sich deshalb nicht in die Quere. */
+  @keyframes auroraA {
+    from { transform: translate(-2%, 1%)  scale(1)    rotate(0deg) }
+    to   { transform: translate(3%, -3%)  scale(1.09) rotate(9deg) }
+  }
+  @keyframes auroraB {
+    from { transform: translate(3%, -2%)  scale(1.05) rotate(0deg) }
+    to   { transform: translate(-4%, 3%)  scale(.94)  rotate(-11deg) }
+  }
+}
+
+/* ---------- Verlaufs-Schrift ----------
+   Der Serif-Kursiv-Akzent trug bisher dieselbe Tinte wie der Rest der
+   Ueberschrift.
+
+   Von David gewaehlt: Gold nach Bronze. #a97400 haelt 4,05:1 und
+   #7c4a11 7,38:1 auf Weiss. Die hellen Aurora-Toene waeren hier als
+   SCHRIFT unlesbar — sie duerfen nur im Schleier vorkommen.
+
+   Der @supports-Riegel ist keine Zierde: ohne background-clip:text
+   waere die Schrift mit color:transparent unsichtbar. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .serif {
+    background-image: linear-gradient(96deg, #a97400 0%, #8d5a0c 46%, #7c4a11 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+
+    /* Gemessen an Instrument Serif Kursiv bei 100 px:
+         Ink ragt rechts 6,9 px ueber die Laufweite hinaus (0,069em),
+         links 10 px (0,100em),
+         dazu das negative Tracking von 0,037em.
+       Der Farbausschnitt endet aber GENAU an der Laufweite — ohne diese
+       Reserve schneidet er die Kursiv-Spitzen senkrecht ab. Das negative
+       margin gibt die Reserve fuer das Layout wieder her, die Zeile
+       bleibt also exakt gleich lang. */
+    padding-inline: 0.13em;
+    margin-inline: -0.13em;
+
+    /* clone statt slice: bei einem Umbruch bekommt JEDE Zeile ihren
+       eigenen vollen Verlauf und ihre eigene Reserve. Mit slice haette
+       nur der Anfang der ersten und das Ende der letzten Zeile Reserve —
+       an den Umbruechen dazwischen wuerde weiter abgeschnitten.
+       Betrifft „ehrlich beraten" (leistungen) und „Von der Skizze bis
+       zum Livegang" (ueber), beide brechen auf zwei Zeilen. */
+    -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
+
+    /* Kein padding-bottom: nachgemessen ragt die Unterlaenge mit 22 px
+       NICHT aus dem Schriftkasten (31 px Descent) heraus. Die alte
+       Zeile hat ein Problem geloest, das es nicht gab. */
+  }
+}
+
+/* Zwei Umgebungen kennen keinen Farbverlauf in Schrift — dort waere
+   transparente Schrift schlicht unsichtbar. */
+@media (forced-colors: active) {
+  .serif { background: none; color: CanvasText; -webkit-text-fill-color: CanvasText; }
+}
+@media print {
+  .serif { background: none; color: #7c4a11; -webkit-text-fill-color: #7c4a11; }
+}
+
+/* ---------- Kicker ----------
+   Apple setzt solche Etiketten als graue Flaeche ohne Rahmen. Der
+   Rahmen liess sie wie anklickbare Knoepfe aussehen. */
+body .kicker {
+  background: #f0f0f2;
+  border-color: transparent;
+  color: #4b4b50;
+}
+.band .kicker { background: #e9e9ec; }
+
+/* ---------- Karten ----------
+   Auf grauem Grund sind Karten weiss, auf weissem Grund grau. Sonst
+   verschwinden sie. */
+.band .overview__card,
+.band .step,
+.band .plan,
+.band .faq__item { background: #fff; }
+
+.overview__card { border: 0; }
+.overview__card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+/* ---------- Fuenf Karten, symmetrisch ----------
+   Vorher repeat(auto-fit, minmax(240px,1fr)): das ergab vier Karten in
+   Reihe eins und eine einsame in Reihe zwei. Jetzt drei oben, zwei
+   unten — beide Reihen laufen ueber die volle Breite.
+   Das Sechser-Raster macht das moeglich: 3 × 2 Spalten, dann 2 × 3. */
+.overview { grid-template-columns: 1fr; gap: clamp(12px, 1.2vw, 16px); }
+@media (min-width: 640px) {
+  .overview { grid-template-columns: repeat(2, 1fr); }
+  /* Bei vier Karten (404-Seite) ergibt das ein sauberes 2 × 2. Bei fuenf
+     legt sich die letzte ueber die volle Breite. */
+  .overview--fuenf .overview__card:last-child { grid-column: 1 / -1; }
+}
+@media (min-width: 1000px) {
+  .overview--fuenf { grid-template-columns: repeat(6, 1fr); }
+  .overview--fuenf .overview__card:nth-child(-n+3) { grid-column: span 2; }
+  .overview--fuenf .overview__card:nth-child(n+4)  { grid-column: span 3; }
+}
+
+/* ---------- Der Hauptknopf im Hero ----------
+   Davids Wunsch: schwarzer Verlauf, farbiger Glow, und er soll dem
+   Mauszeiger ein Stueck entgegenkommen.
+
+   Drei Lagen:
+   ::before  farbiger Schleier UNTER dem Knopf, blendet beim Hover auf
+   Element  der schwarze Verlauf selbst
+   ::after   Glanzlicht, das der Maus folgt (Position kommt aus --mx/--my)
+   > span    die Schrift, muss ueber ::after liegen — deshalb steht der
+             Text im Markup in einem <span>. */
+body .btn--glanz {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(152deg, #34343a 0%, #08080a 54%, #1c1c22 100%) !important;
+  border-color: transparent !important;
+  /* Schlagschatten nach Davids Vorlage. Der Trick ist nicht EIN starker
+     Schatten, sondern eine Treppe aus mehreren: je weiter unten, desto
+     groesser der Weichzeichner und desto blasser. So faellt das Licht in
+     der Wirklichkeit, und nur so wirkt der Knopf angehoben statt
+     aufgeklebt.
+
+     Die erste Lage ist KEIN Schatten, sondern eine Lichtkante innen oben:
+     ein Hauch Weiss auf der Oberkante. Ohne die sieht schwarz auf hell
+     wie ein Loch aus, nicht wie ein Koerper. Sie ist der halbe Effekt.
+
+     Der negative Spread (-1px, -4px, -10px) zieht die unteren Lagen
+     schmaler als den Knopf — dadurch quellen sie seitlich nicht hervor
+     und der Schatten bleibt unter dem Knopf, wo er hingehoert. */
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,.15),
+    rgba(0,0,0,.09) 0 0 0 1px,
+    rgba(0,0,0,.20) 0 1px 2px 0,
+    rgba(0,0,0,.24) 0 4px 8px -1px,
+    rgba(0,0,0,.22) 0 10px 20px -4px,
+    rgba(0,0,0,.16) 0 22px 34px -10px;
+  transition: box-shadow .35s ease;
+  will-change: transform;
+}
+.btn--glanz > span { position: relative; z-index: 2; }
+
+.btn--glanz::before {
+  content: ""; position: absolute; inset: -13px; z-index: -1;
+  border-radius: 100px;
+  background: linear-gradient(100deg, var(--aurora-1), var(--aurora-2) 46%, var(--aurora-3));
+  filter: blur(15px);
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.btn--glanz:hover::before,
+.btn--glanz:focus-visible::before { opacity: .62; }
+
+.btn--glanz::after {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  border-radius: inherit; pointer-events: none;
+  background: radial-gradient(130px 66px at var(--mx, 50%) var(--my, 50%),
+              rgba(255,255,255,.26), transparent 68%);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.btn--glanz:hover::after,
+.btn--glanz:focus-visible::after { opacity: 1; }
+
+/* Beim Hover steigt die Treppe eine Stufe hoeher: gleiche Lagen, nur
+   weiter nach unten versetzt und etwas kraeftiger. */
+body .btn--glanz:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,.18),
+    rgba(0,0,0,.10) 0 0 0 1px,
+    rgba(0,0,0,.22) 0 1px 2px 0,
+    rgba(0,0,0,.26) 0 6px 12px -1px,
+    rgba(0,0,0,.24) 0 16px 28px -6px,
+    rgba(0,0,0,.18) 0 30px 46px -12px;
+}
+/* Der schwarze Verlauf darf beim Hover NICHT auf #1a1a1a umspringen —
+   das ist die Regel aus hell.css, hier ausgehebelt. */
+body .btn--glanz:hover { background: linear-gradient(152deg, #3a3a42 0%, #0b0b0e 54%, #212129 100%) !important; }
+
+/* Ohne Maus (Touch) gibt es kein Hover — dort steht der Glow dauerhaft
+   leise an, sonst saehe der Knopf auf dem Handy nackt aus. */
+@media (hover: none) {
+  .btn--glanz::before { opacity: .34; }
+}
+
+
+/* ---------- Der Hero-Knopf als Etikett ----------
+   Vorher stand hier „Verfuegbar fuer neue Projekte" — eine Aussage ueber
+   David, kein Angebot an den Leser. Jetzt ist es ein Link auf den
+   Website-Check weiter unten: der zweite, unverbindlichere Weg neben dem
+   Erstgespraech. */
+.buehne__badge--cta {
+  text-decoration: none;
+  transition: background-color .25s ease, border-color .25s ease;
+}
+.buehne__badge--cta:hover { background: #fff; border-color: #dcdce0; color: inherit; }
+.buehne__badge-pfeil {
+  display: inline-block; margin-left: 2px;
+  transition: transform .25s cubic-bezier(.2,.8,.2,1);
+}
+.buehne__badge--cta:hover .buehne__badge-pfeil { transform: translateX(4px); }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Ein anderer Schleier pro Seite
+
+   Vorher lag auf allen neun Seiten derselbe Klecks an derselben Stelle —
+   beim Durchklicken sah jede Seite oben gleich aus. Jede Seite bekommt
+   deshalb eine eigene Mischung: andere Farbe vorne, andere Position,
+   andere Groesse, andere Laufzeit. Die Familie bleibt dieselbe (Gold,
+   Bernstein, Terrakotta), nur die Betonung wandert.
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* Start — breit und mittig, Gold vorne. Der ruhigste der sechs. */
+.schein--a::before {
+  background:
+    radial-gradient(38% 54% at 26% 44%, rgba(217,165,32,.36), transparent 68%),
+    radial-gradient(34% 48% at 66% 34%, rgba(224,123,57,.24), transparent 70%),
+    radial-gradient(42% 52% at 54% 76%, rgba(194,65,12,.14), transparent 70%);
+}
+
+/* Probleme — nach links gerueckt, Terrakotta vorne. Passt zum Thema. */
+.schein--b::before {
+  width: min(1000px, 145%); aspect-ratio: 2.1 / 1;
+  background:
+    radial-gradient(40% 56% at 18% 40%, rgba(194,65,12,.28), transparent 70%),
+    radial-gradient(36% 50% at 52% 58%, rgba(224,123,57,.26), transparent 70%),
+    radial-gradient(34% 46% at 78% 32%, rgba(217,165,32,.22), transparent 70%);
+}
+.schein--b::before { animation-duration: 29s; }
+.schein--b::after  { animation-duration: 24s; }
+
+/* Leistungen — nach rechts, Bernstein vorne, flacher. */
+.schein--c::before {
+  width: min(1180px, 160%); aspect-ratio: 2.4 / 1; top: 40%;
+  background:
+    radial-gradient(36% 58% at 74% 42%, rgba(224,123,57,.32), transparent 70%),
+    radial-gradient(40% 52% at 44% 34%, rgba(217,165,32,.24), transparent 72%),
+    radial-gradient(30% 44% at 22% 66%, rgba(194,65,12,.14), transparent 70%);
+}
+.schein--c::before { animation-duration: 31s; }
+
+/* Preise — hoch und schmal, damit die Pakete darunter Luft behalten. */
+.schein--d::before {
+  width: min(880px, 125%); aspect-ratio: 1.35 / 1; top: 48%;
+  background:
+    radial-gradient(44% 44% at 50% 34%, rgba(217,165,32,.34), transparent 68%),
+    radial-gradient(38% 48% at 30% 70%, rgba(224,123,57,.22), transparent 72%),
+    radial-gradient(34% 40% at 72% 68%, rgba(194,65,12,.16), transparent 72%);
+}
+.schein--d::before { animation-duration: 22s; }
+
+/* Ueber mich — warm und tief, der waermste der sechs. */
+.schein--e::before {
+  width: min(1060px, 150%); aspect-ratio: 1.7 / 1; top: 52%;
+  background:
+    radial-gradient(42% 52% at 36% 60%, rgba(224,123,57,.30), transparent 70%),
+    radial-gradient(36% 48% at 68% 44%, rgba(217,165,32,.26), transparent 70%),
+    radial-gradient(32% 44% at 50% 22%, rgba(194,65,12,.14), transparent 72%);
+}
+.schein--e::before { animation-duration: 34s; }
+.schein--e::after  { animation-duration: 41s; }
+
+/* Kontakt — sehr breit und flach, der leiseste. Hier soll das Formular
+   die Aufmerksamkeit haben, nicht der Hintergrund. */
+.schein--f::before {
+  width: min(1240px, 170%); aspect-ratio: 2.8 / 1; top: 38%;
+  background:
+    radial-gradient(34% 60% at 30% 46%, rgba(217,165,32,.26), transparent 72%),
+    radial-gradient(34% 56% at 70% 50%, rgba(224,123,57,.20), transparent 72%),
+    radial-gradient(28% 44% at 50% 74%, rgba(194,65,12,.10), transparent 72%);
+}
+.schein--f::before { animation-duration: 36s; }
+
+/* ---------- Reine Farbvarianten ----------
+   Ohne Groesse und Position. Fuer die zwei Schleier, die INNERHALB einer
+   Seite sitzen (Preis-Karte, Klartext-Block): dort darf die Geometrie
+   nicht angefasst werden, sonst sprengt der Schleier seinen Kasten. */
+.schein--terrakotta::before {
+  background:
+    radial-gradient(40% 54% at 34% 42%, rgba(194,65,12,.26), transparent 70%),
+    radial-gradient(38% 50% at 66% 62%, rgba(224,123,57,.24), transparent 70%);
+}
+.schein--bernstein::before {
+  background:
+    radial-gradient(40% 54% at 62% 40%, rgba(224,123,57,.30), transparent 70%),
+    radial-gradient(38% 50% at 32% 64%, rgba(217,165,32,.24), transparent 72%);
+}
+
+/* ---------- Dieselbe Treppe, leiser, fuer alle uebrigen dunklen Knoepfe
+   Ohne das stuende der Hero-Knopf allein da und die gleichen Knoepfe auf
+   den Unterseiten saehen flach dagegen aus. Halbe Deckkraft, halbe
+   Fallhoehe — gleiche Familie, ruhigere Stimme. */
+body .btn--dunkel:not(.btn--glanz),
+body .btn--accent:not(.btn--glanz) {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,.12),
+    rgba(0,0,0,.08) 0 0 0 1px,
+    rgba(0,0,0,.16) 0 1px 2px 0,
+    rgba(0,0,0,.16) 0 3px 6px -1px,
+    rgba(0,0,0,.12) 0 8px 16px -4px;
+  transition: box-shadow .3s ease;
+}
+body .btn--dunkel:not(.btn--glanz):hover,
+body .btn--accent:not(.btn--glanz):hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,.14),
+    rgba(0,0,0,.09) 0 0 0 1px,
+    rgba(0,0,0,.18) 0 1px 2px 0,
+    rgba(0,0,0,.20) 0 5px 10px -1px,
+    rgba(0,0,0,.15) 0 14px 24px -6px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Himmel — der Verlauf von oben (nur Startseite)
+
+   Vorbild: cbsolutions-agency.de, dort ein blaues Wolkenfoto am oberen
+   Rand, das nach unten in Weiss auslaeuft. Hier dasselbe in Gold-Bronze,
+   aber ohne Foto: eine weiche Farbrampe plus eine Wolkenstruktur aus
+   SVG-Rauschen.
+
+   z-index: -1 setzt die Schicht hinter allen Inhalt, aber vor den weissen
+   Seitengrund. Damit sie sich am Seitenrand ausrichtet und nicht am
+   ersten Abschnitt, braucht <body> einmalig position: relative.
+   ═════════════════════════════════════════════════════════════════════ */
+body.hat-himmel { position: relative; }
+
+.himmel {
+  position: absolute; z-index: -1; pointer-events: none;
+  top: 0; left: 0; right: 0;
+  height: clamp(460px, 78vh, 860px);
+  overflow: hidden;
+  /* Oben satt, nach unten in nichts. Die vier Stopps sind der ganze
+     Effekt: Gold, Bernstein, ein Hauch Terrakotta, dann Luft.
+     rgba(184,134,11,.30) ueber Weiss ergibt #e9dbb6 — dunkler Text
+     haelt darauf immer noch 11:1, die Kopfzeile bleibt also lesbar. */
+  background: linear-gradient(to bottom,
+    rgba(184, 134,  11, .30)  0%,
+    rgba(217, 165,  32, .22) 14%,
+    rgba(224, 123,  57, .12) 32%,
+    rgba(255, 255, 255,  0)  70%);
+}
+
+.himmel__wolken {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: .5;
+  /* Zweimal ausblenden: nach unten, damit die Wolken mit dem Verlauf
+     zusammen verschwinden, und an den Seiten, damit sie nicht an einer
+     Kante abreissen. mask ist die einzige saubere Art, ein gefiltertes
+     SVG weich enden zu lassen. */
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 34%, transparent 68%),
+    linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+          mask-image:
+    linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 34%, transparent 68%),
+    linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  -webkit-mask-composite: source-in;
+          mask-composite: intersect;
+}
+/* Auf kleinen Bildschirmen bleibt nur die Farbrampe. Ein gefiltertes SVG
+   ueber die volle Breite kostet auf schwachen Handys spuerbar Rechenzeit,
+   und die feine Struktur sieht man dort ohnehin kaum. */
+@media (max-width: 760px) {
+  .himmel__wolken { display: none; }
+  .himmel { height: clamp(380px, 56vh, 520px); }
+}
+
+/* ---------- Kopfzeile ueber dem Himmel ----------
+   Der frühere Sonderfall ist weg: die Kopfzeile ist jetzt auf jeder Seite
+   eine schwebende Glas-Pille (styles/site.css) und deckt von sich aus.
+   Ueber dem Himmel bleibt nur eine Korrektur — der Farbverlauf ist dort
+   kraeftiger, deshalb darf das Glas etwas dichter sein. */
+body.hat-himmel .header__inner {
+  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   Rechenzeit sparen — Stand 30.08.2026
+
+   Auf dem Handy ruckelte die Seite. Gemessen waren es drei Dinge, alle
+   drei laufen dauerhaft und nicht nur, wenn man sie sieht:
+
+   1. Die Glas-Pille der Kopfzeile. backdrop-filter rechnet bei JEDEM
+      Bildlauf-Bild die Unschaerfe hinter der Pille neu — auf dem Handy
+      der teuerste einzelne Posten der Seite. Deckende Fassung statt Glas.
+   2. Die Wortwoge animiert font-weight. Eine andere Schriftstaerke heisst
+      neuer Textsatz und neues Layout, 60-mal pro Sekunde, ueber fuenf
+      grosse Zeilen. Auf dem Handy steht die Staerke deshalb fest, es
+      bleiben Bewegung und Farbe — beide kosten nur Zusammensetzen.
+   3. Die Aurora-Schleier: zwei sehr grosse Flaechen mit blur(44/52px),
+      dauerhaft gedreht und skaliert. Unschaerfe wird bei jeder Aenderung
+      neu gerechnet. Auf dem Handy stehen sie still und sind weicher
+      gerechnet — als Farbfleck sehen sie unveraendert aus.
+
+   Dazu kommt in js/app.js `initRuhe`: was gerade nicht im Bild ist, wird
+   angehalten. Das gilt auf jedem Geraet.
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* Angehalten, solange der Baustein ausserhalb des Bildschirms liegt.
+   !important, weil die Animationen aus drei Dateien kommen. */
+.anim-aus,
+.anim-aus::before, .anim-aus::after,
+.anim-aus li, .anim-aus li span {
+  animation-play-state: paused !important;
+}
+
+/* Steht ausserhalb der Abfrage: @keyframes in einem @media gelten nur,
+   solange die Abfrage passt — beim Drehen des Geraets waere die
+   Animation sonst kurz namenlos. */
+@keyframes woge-zeile-handy {
+  0%, 100% { transform: translateX(0);    color: #67676c; }
+  30%, 60% { transform: translateX(100%); color: var(--color-text); }
+}
+
+@media (max-width: 760px) {
+  .header__inner,
+  .header--fest .header__inner {
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+    background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+  }
+  body.hat-himmel .header__inner {
+    background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+  }
+
+  body .woge li { animation-name: woge-zeile-handy; font-weight: 600; }
+
+  .schein::before, .schein::after { animation: none; }
+  .schein::before { filter: blur(30px); }
+  .schein::after  { filter: blur(34px); }
+}
+
+/* Ohne Maus gibt es keinen Magnet-Knopf — dann braucht die Grafikkarte
+   auch keine eigene Ebene dafuer freizuhalten. */
+@media (hover: none) {
+  .btn--glanz { will-change: auto; }
+}

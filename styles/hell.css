@@ -1,0 +1,363 @@
+/* ══════════════════════════════════════════════════════════════════════
+   Helles Theme — gilt fuer ALLE Seiten.
+
+   War zuerst ein Probelauf an <body class="hell"> auf index.html. Nach der
+   Entscheidung fuer Hell ist die Klasse raus: die Regeln haengen jetzt an
+   body und greifen ueberall, sobald diese Datei eingebunden ist.
+
+   Die Datei ueberschreibt Tokens aus nocturne.css. Weil site.css fast
+   durchgehend mit var(--…) arbeitet, kippt damit die ganze Seite mit —
+   Farben, Radien, Schatten.
+
+   Vorbild: cbsolutions-agency.de — weisser Grund, Grotesk (Geist) fuer
+   alles, Instrument Serif Kursiv als Akzent in einzelnen Satzteilen,
+   schwarze Pillen-Knoepfe, sehr zurueckhaltende Schatten.
+   ═════════════════════════════════════════════════════════════════════ */
+
+body {
+  /* Farben nach cbsolutions-agency.de: reines Weiss als Grund, ein Hauch
+     Grau fuer abgesetzte Flaechen, Text in drei Stufen. Der violette
+     Akzent BLEIBT deiner - das Blau des Vorbilds waere deren Marke,
+     nicht deine. */
+  --color-bg: #ffffff;
+  --color-surface: #fafafa;
+  --color-text: #282828;
+  --color-accent: #7a40ed;
+  --color-accent-2: #a981ff;
+  --color-divider: #ededed;
+
+  --color-accent-100: #f4efff;
+  --color-accent-200: #e7dcff;
+  --color-accent-300: #cab3f8;
+  --color-accent-400: #a981ff;
+  --color-accent-500: #7a40ed;
+  --color-accent-600: #6429d6;
+  --color-accent-700: #4a1b9d;
+
+  /* Schatten des Vorbilds sind erstaunlich zurueckhaltend: mehrere Lagen,
+     aber im Subpixel-Bereich beginnend. Das ergibt eine Kante, die man
+     eher spuert als sieht - das Gegenteil des Kissen-Schattens aus der
+     vorherigen Fassung. */
+  --shadow-sm:
+    rgba(0,0,0,.055) 0 .2px 0 0,
+    rgba(0,0,0,.04)  0 1.3px .6px 0;
+  --shadow-md:
+    rgba(0,0,0,.055) 0 .2px 0 0,
+    rgba(0,0,0,.05)  0 1.3px .6px 0,
+    rgba(0,0,0,.045) 0 5px 3px 0;
+  --shadow-lg:
+    rgba(0,0,0,.06)  0 .2px 0 0,
+    rgba(0,0,0,.05)  0 2px 1px 0,
+    rgba(0,0,0,.045) 0 8px 5px 0,
+    rgba(0,0,0,.04)  0 20px 14px 0;
+
+  /* Geometrie deutlich strenger als zuvor: das Vorbild nutzt fast ueberall
+     10px, Pillen nur bei Knoepfen und Badges. */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Das Wortbild-PNG ist nahezu weiß und wäre auf Papier unsichtbar.
+   brightness(0) färbt alle deckenden Pixel schwarz und lässt die
+   Transparenz unberührt — Zwischenlösung, bis es eine dunkle Datei gibt. */
+body .header__mark,
+body .menu__brand img,
+body .abschluss__sign img,
+body .marquee__mark { filter: brightness(0); opacity: .86; }
+
+/* ---------- Nebentext ----------
+   Auf reinem Weiss sind die Schwellen noch enger als auf Papiergrau.
+   #777777 - der Ton des Vorbilds - liegt bei 4,48:1 und verfehlt AA
+   knapp. Deshalb #757575 mit 4,6:1 als leiseste Stufe.
+   Gemessen auf #ffffff: 12,6:1 / 7,0:1 / 4,6:1. */
+body .muted   { color: #333333; }
+body .muted-2 { color: #5c5c5c; }
+body .muted-3 { color: #757575; }
+
+body .hero__meta,
+body .footer a,
+body .footer__copy,
+body .finding__mark,
+body .check__hint,
+body .buehne__mikro,
+body .buehne__leiste,
+body .abschluss__sign { color: #757575; }
+
+/* ---------- Typografie ----------
+   Das Vorbild traegt ALLES in der Grotesk und setzt den Serif nur als
+   Kursiv-Akzent in einzelne Satzteile (.serif). Ueberschriften also
+   Gewicht 600 mit sehr engem Tracking. */
+body h1, body h2, body h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+body h1 { letter-spacing: -0.055em; line-height: 1.05; }
+body h2 { letter-spacing: -0.045em; line-height: 1.08; }
+body h3 { letter-spacing: -0.03em; }
+body .header__brand,
+body .menu__brand,
+body .footer__brand { font-weight: 600; letter-spacing: -0.02em; }
+
+
+/* ---------- Kicker als Pille ----------
+   Beim Vorbild eine weisse, umrandete Pille - kein farbiger Klecks. */
+body .kicker {
+  display: inline-flex; align-items: center;
+  padding: 6px 14px; border-radius: 100px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: #5c5c5c;
+  font-size: 11.5px; font-weight: 500; letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/* ---------- Knoepfe ----------
+   Beim Vorbild ist der Hauptknopf SCHWARZ, nicht farbig - der Akzent
+   bleibt der Schrift und den Links vorbehalten. Radius 100px. */
+body .btn {
+  border-radius: 100px; font-weight: 500; letter-spacing: -0.01em;
+  background: var(--color-bg);
+  border-color: var(--color-divider);
+  box-shadow: var(--shadow-sm);
+}
+body .btn:hover { background: #f7f7f7; border-color: #e0e0e0; }
+body .btn--dunkel,
+body .btn--accent {
+  background: #000; border-color: #000; color: #fff;
+  box-shadow: var(--shadow-md);
+}
+body .btn--dunkel:hover,
+body .btn--accent:hover { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
+body .header__cta.btn--accent { background: #000; color: #fff; }
+body .btn--link {
+  background: none; box-shadow: none; border: 0; color: #757575;
+}
+body .btn--link:hover { background: none; color: var(--color-accent); }
+
+/* ---------- Kopfzeile ---------- */
+body .header__nav a { color: #55535a; }
+body .header__nav a:hover,
+body .header__nav a.active { color: var(--color-text); }
+body .header__burger { border-radius: var(--radius-sm); }
+body .menu__panel {
+  background: var(--color-bg);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---------- Hero ----------
+   Der Radial-Glow hinter der Überschrift ist genau das Merkmal, das
+   generierte Seiten gemeinsam haben. Auf Papier hat er nichts verloren. */
+body .hero__glow { display: none; }
+/* #97979b (das „Soft Mist" des Vorbilds) lag auf Papier bei 2,58:1 und damit
+   unter den 3:1, die WCAG AA für großen Text verlangt. #83838a hält 3,35:1
+   und wirkt trotzdem deutlich zurückgenommen gegen die Tinte. */
+body .hero__dim { color: #83838a; }
+
+/* Verfügbarkeits-Punkt: das helle Mintgrün der dunklen Fassung verschwindet
+   auf Papier. Eigenes Grün, eigene Animation. */
+body .avail__dot {
+  background: #0e9f5e;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #0e9f5e 20%, transparent);
+  animation-name: avail-pulse-hell;
+}
+@keyframes avail-pulse-hell {
+  0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, #0e9f5e 20%, transparent); }
+  50%      { box-shadow: 0 0 0 6px color-mix(in srgb, #0e9f5e 7%,  transparent); }
+}
+
+/* ---------- Website-Check: die schwebende Karte ---------- */
+body .check__card {
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+body .check__bar { background: #ededed; }
+body .option {
+  background: var(--color-bg);
+  border-color: var(--color-divider);
+  border-radius: var(--radius-md);
+}
+body .option:hover {
+  background: var(--color-accent-100);
+  border-color: var(--color-accent-400);
+}
+body .option::before { border-color: #cfced3; }
+
+/* ---------- Marquee ---------- */
+body .marquee__track { color: #55535a; }
+
+/* ---------- Übersichtskarten ---------- */
+body .overview__card {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-sm);
+}
+body .overview__card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+body .overview__txt { color: #55535a; }
+
+/* ---------- Wortwoge ----------
+   Nur die Farben werden fuer Papier neu gesetzt, die Mechanik (Zeile +100 %,
+   Wort -100 %) bleibt aus site.css. Deshalb wird hier ausschliesslich die
+   Zeilen-Animation ersetzt - woge-wort laeuft unveraendert weiter.
+
+   58 % Tinte auf Papier ergaebe 4,3:1 und laege damit unter AA. Der erste
+   Versuch mit #6e6e73 landete auf exakt 4,50:1 - bestanden, aber ohne jede
+   Reserve. #67676c haelt 5,0:1, der helle Zustand 15,8:1. */
+body .woge li { color: #67676c; animation-name: woge-zeile-hell; }
+@keyframes woge-zeile-hell {
+  0%, 100% { transform: translateX(0);    font-weight: 500; color: #67676c; }
+  30%, 60% { transform: translateX(100%); font-weight: 700; color: var(--color-text); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body .woge li { animation: none; transform: none; color: var(--color-text); }
+}
+
+/* ---------- Abschluss ---------- */
+body .abschluss__facts dd { color: #55535a; }
+
+/* ---------- Fußzeile ---------- */
+body .footer a.footer__legal { color: var(--color-accent); }
+body .footer a.footer__legal:hover { color: var(--color-accent-700); }
+body .footer a:hover { color: var(--color-accent); }
+
+/* ---------- Sprungmarke ---------- */
+body .skip-link { box-shadow: var(--shadow-md); border-radius: var(--radius-md); }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Unterseiten — was auf dunklem Grund gebaut war und auf Papier bricht
+   ════════════════════════════════════════════════════════════════════ */
+
+
+/* Das Empfohlen-Schild zog seine Farben aus --color-accent-800/-100. Die
+   helle Rampe endet bei 700, also war der Hintergrund LEER und die Schrift
+   fast weiß auf Weiß — unlesbar. Jetzt aus der hellen Rampe gemischt. */
+.plan__badge {
+  background: var(--color-accent-200);
+  color: var(--color-accent-700);
+  border-radius: 100px; padding: 4px 11px; font-weight: 500;
+}
+.tag-accent { background: var(--color-accent-200); color: var(--color-accent-700); }
+.tag-neutral { background: #f0f0f2; color: #333; }
+
+/* Der Kontaktblock war eine dunkle Indigo-Flaeche mit Leuchtfleck. Auf
+   Papier wird daraus eine helle Karte mit Haarlinie — der Leuchtfleck
+   bleibt, aber als weicher violetter Schleier statt als dunkler Nebel. */
+.contact {
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.contact__glow {
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--color-accent) 14%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 5%, transparent) 45%,
+    transparent 72%);
+}
+.contact__points li { color: #333; }
+
+/* Umriss-Kreuze und -Ziffern: die Strichfarbe war auf helle Schrift auf
+   dunklem Grund gerechnet. */
+/* #9a9aa0 lag bei 2,80:1 gegen Weiß. Die Kreuze sind zwar dekorativ
+   (aria-hidden), also von WCAG nicht erfasst — aber sie waren die
+   schwaechste Stelle der Seite. #82828a haelt 3,81:1. */
+.nicht__mark { -webkit-text-stroke-color: #82828a; }
+.nicht { border-radius: var(--radius-md); box-shadow: inset 0 0 0 1px var(--color-divider); }
+.klartext {
+  background: var(--color-accent-100);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+.klartext__sign img, .nicht__sign img { filter: brightness(0); opacity: .86; }
+.klartext__no { -webkit-text-stroke-color: color-mix(in srgb, var(--color-accent) 60%, transparent); }
+
+/* Karten und Felder auf den Unterseiten */
+.step, .plan {
+  background: var(--color-bg);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.plan--featured {
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-accent) 45%, transparent), var(--shadow-md);
+  border-color: transparent;
+}
+.calc, .calc-fallback, .result {
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+.form {
+  background: var(--color-bg);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-md);
+}
+.form input, .form textarea { background: var(--color-surface); }
+.form input:focus-visible, .form textarea:focus-visible { background: var(--color-bg); }
+.extra, .option { background: var(--color-bg); }
+.extra[aria-pressed="true"] { background: var(--color-accent-100); }
+.stepper__btn { border-radius: 100px; }
+.menu { background: color-mix(in srgb, #1a1a1f 45%, transparent); }
+.menu__panel { box-shadow: var(--shadow-lg); }
+
+/* Weitere fest verdrahtete color-mix-Werte unter 58 %, die auf Weiß
+   unter 4,5:1 fallen wuerden. */
+.step p, .plan__for, .plan__price span, .stepper__hint, .extra__price,
+.result__lines, .result__weeks, .result__total span, .overview__txt,
+.calc__intro, .check__note, .form__opt,
+.buehne__sub, .klartext__sign, .nicht__sign, .marquee__track { color: #5c5c5c; }
+
+/* ════════════════════════════════════════════════════════════════════
+   Schein — Leuchtschleier zum Hervorheben
+   Nicht zu verwechseln mit dem Radial-Glow, den wir am Anfang entfernt
+   haben: der lag als dunkler Nebel HINTER dem Hero auf dunklem Grund und
+   ist das Erkennungszeichen generierter Vorlagen. Hier ist es das
+   Gegenteil — ein heller, farbiger Schleier auf Weiß, sparsam gesetzt.
+
+   z-index:-1 legt den Schleier hinter den Inhalt UND hinter den eigenen
+   Hintergrund des Elements. Deshalb bekommt jedes Element, das ihn traegt,
+   position:relative, aber KEINEN eigenen deckenden Hintergrund.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Der Schleier ragt absichtlich ueber sein Element hinaus — sonst waere
+   er bei Karten gar nicht sichtbar, weil deren weisse Flaeche ihn deckt.
+   Auf dem Handy schob er die Seite dadurch auf 409px Breite (gemessen).
+
+   Gekappt wird am <main>, NICHT am <html>. Der erste Versuch mit
+   html{overflow-x:clip} hat den Ueberlauf zwar behoben, aber die
+   klebende Kopfzeile zerstoert: sie scrollte mit statt oben zu bleiben
+   (gemessen: top -900px statt 0). Ein Vorfahre mit nicht-sichtbarem
+   overflow wird zum Bezugsrahmen fuer position:sticky. Da <header>
+   ausserhalb von <main> liegt, ist es davon nicht betroffen. */
+main { overflow-x: clip; }
+
+.schein { position: relative; }
+.schein::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; top: 46%; translate: -50% -50%;
+  width: min(880px, 130%); aspect-ratio: 1.7 / 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--color-accent) 15%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 6%, transparent) 52%,
+    transparent 76%);
+}
+/* Engere Fassung, die sich an eine Karte schmiegt statt an eine Seite */
+.schein--karte::before {
+  width: 128%; aspect-ratio: 1 / 1.25; top: 50%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--color-accent) 17%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 6%, transparent) 55%,
+    transparent 78%);
+}
