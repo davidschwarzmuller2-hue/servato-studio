@@ -47,11 +47,11 @@
 <!-- ?v=N an den Stylesheets: Browser halten CSS hartnaeckig im Cache.
      Beim Aendern des Designs saehe man sonst die alte Fassung und suchte den
      Fehler im Code statt im Cache. Zahl bei jeder Aenderung hochzaehlen. -->
-<link rel="stylesheet" href="fonts/fonts.css?v=40">
-<link rel="stylesheet" href="styles/nocturne.css?v=40">
-<link rel="stylesheet" href="styles/site.css?v=40">
-<link rel="stylesheet" href="styles/hell.css?v=40">
-<link rel="stylesheet" href="styles/apple.css?v=40">
+<link rel="stylesheet" href="fonts/fonts.css?v=44">
+<link rel="stylesheet" href="styles/nocturne.css?v=44">
+<link rel="stylesheet" href="styles/site.css?v=44">
+<link rel="stylesheet" href="styles/hell.css?v=44">
+<link rel="stylesheet" href="styles/apple.css?v=44">
 </head>
 <body>
 
@@ -130,7 +130,7 @@
       <input type="hidden" name="form-name" value="kontakt">
       <p class="form__hp" aria-hidden="true"><label>Dieses Feld bitte leer lassen: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
       <div>
-        <label for="sv-name">Name</label>
+        <label for="sv-name">Name <span class="form__pflicht" aria-hidden="true">*</span></label>
         <input id="sv-name" name="name" required autocomplete="name" placeholder="Vor- und Nachname">
       </div>
       <div>
@@ -138,7 +138,7 @@
         <input id="sv-company" name="betrieb" autocomplete="organization" placeholder="z. B. Dachdeckerei Krüger">
       </div>
       <div>
-        <label for="sv-mail">E-Mail</label>
+        <label for="sv-mail">E-Mail <span class="form__pflicht" aria-hidden="true">*</span></label>
         <input id="sv-mail" name="email" type="email" required autocomplete="email"
                inputmode="email" placeholder="name@betrieb.de">
       </div>
@@ -153,7 +153,22 @@
         <label for="sv-msg">Worum geht es?</label>
         <textarea id="sv-msg" name="nachricht" placeholder="Neue Website, Relaunch, oder erst einmal Beratung?"></textarea>
       </div>
+      <!-- Art. 13 DSGVO verlangt, dass die Betroffenen ZUM ZEITPUNKT der
+           Erhebung informiert werden — ein Link im Fuss reicht dafür nicht.
+           Das Kästchen ist bewusst als Kenntnisnahme formuliert, nicht als
+           Einwilligung: Rechtsgrundlage ist Art. 6 Abs. 1 lit. b/f DSGVO,
+           eine Einwilligung wäre die falsche Grundlage und jederzeit
+           widerrufbar. Es dokumentiert nur, dass der Hinweis sichtbar war. -->
+      <div class="form__zustimmung">
+        <input type="checkbox" id="sv-datenschutz" name="datenschutz" required value="gelesen">
+        <label for="sv-datenschutz">Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a>
+          gelesen und bin damit einverstanden, dass meine Angaben zur Bearbeitung meiner
+          Anfrage gespeichert und verarbeitet werden. <span class="form__pflicht" aria-hidden="true">*</span></label>
+      </div>
       <button type="submit" class="btn btn--accent btn--block">Erstgespräch anfragen</button>
+      <p class="form__legende muted-3"><span aria-hidden="true">*</span> Pflichtfeld. Ihre Angaben
+        gehen an mich und an den Formulardienst meines Hosters; sie werden gelöscht, sobald Ihre
+        Anfrage erledigt ist. Es gibt keine Weitergabe zu Werbezwecken.</p>
       <p class="form__note muted-3" data-form-note role="status">Antwort innerhalb eines Werktags. Ihre Angaben bleiben bei mir.</p>
     </form>
   </div>
@@ -168,9 +183,12 @@
   <a href="tel:+491789126559">0178 9126559</a>
   <a class="footer__legal" href="impressum.html">Impressum</a>
   <a class="footer__legal" href="datenschutz.html">Datenschutz</a>
+  <a class="footer__legal" href="cookies.html">Cookies</a>
+  <a class="footer__legal" href="agb.html">AGB</a>
+  <a class="footer__legal" href="widerruf.html">Widerruf</a>
   <span class="footer__copy">© 2026</span>
 </footer>
 
-<script src="js/app.js?v=40"></script>
+<script src="js/app.js?v=44"></script>
 </body>
 </html>

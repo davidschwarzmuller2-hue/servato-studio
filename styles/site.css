@@ -892,7 +892,9 @@ p  { text-wrap: pretty; }
    ansehen. Der Pfeil laeuft mit, weil die Bewegung die Richtung meint. */
 .about__link {
   display: inline-flex; align-items: baseline; gap: 9px;
-  margin-top: 24px; font-size: 15px; font-weight: 500;
+  /* min-height 24: WCAG 2.2 SC 2.5.8 verlangt 24x24 px Zielflaeche.
+     Die Zeile mass gemessen 23 px — ein Pixel zu wenig. */
+  margin-top: 24px; min-height: 24px; font-size: 15px; font-weight: 500;
   color: var(--color-accent); text-decoration: none;
 }
 .about__pfeil { transition: transform .34s cubic-bezier(.22, 1, .36, 1); }
@@ -1235,6 +1237,29 @@ p  { text-wrap: pretty; }
 }
 .form textarea { min-height: 92px; resize: vertical; }
 .form input:focus-visible, .form textarea:focus-visible { border-color: var(--color-accent); }
+/* Pflichtfeld-Sternchen: aria-hidden im HTML, weil das required-Attribut
+   die Information fuer Screenreader schon traegt — sonst wird jedes Label
+   doppelt als Pflichtfeld angesagt. */
+.form__pflicht { color: var(--color-accent); font-weight: 600; }
+
+/* Kenntnisnahme-Kaestchen. Das Label liegt NEBEN der Box statt darum
+   herum: so bleibt die Klickflaeche des Links darin erhalten. */
+.form__zustimmung { display: flex; align-items: flex-start; gap: 10px; margin-top: 6px; }
+.form__zustimmung input[type="checkbox"] {
+  /* 24 px, nicht kleiner: SC 2.5.8 (Target Size Minimum, AA) verlangt
+     24x24. Das Label daneben schaltet zwar mit und waere gross genug,
+     aber auf die Ausnahme zu bauen, wenn 6 px es loesen, lohnt nicht. */
+  width: 24px; height: 24px; min-height: 24px; flex: 0 0 24px; margin: 0;
+  accent-color: var(--color-accent); cursor: pointer;
+}
+.form__zustimmung label {
+  font-size: 12.5px; line-height: 1.55; margin: 0; cursor: pointer;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+}
+.form__zustimmung a { color: var(--color-accent); }
+
+.form__legende { font-size: 11.5px; line-height: 1.55; margin: 0; }
+
 .form__note { font-size: 11.5px; margin: 0; transition: color .2s ease; }
 .form__note--error { color: var(--color-accent); }
 .form__note--error a { color: var(--color-accent); }
@@ -1283,6 +1308,10 @@ p  { text-wrap: pretty; }
 .legal-doc p {
   font-size: 14.5px; line-height: 1.7; margin: 0; max-width: 68ch;
   white-space: pre-line;
+  /* Die Unterstrich-Zeilen im Muster-Widerrufsformular sind fuer den
+     Umbruch EIN Wort. Bei 375 px passen sie knapp, auf einem 320-px-Geraet
+     nicht mehr - dann schoebe eine einzige Zeile die ganze Seite breiter. */
+  overflow-wrap: anywhere;
   color: color-mix(in srgb, var(--color-text) 72%, transparent);
 }
 .legal-doc__back {
@@ -1582,7 +1611,10 @@ p  { text-wrap: pretty; }
 .vgl__schild {
   font-size: 12px; color: #757575; text-align: center;
 }
-.vgl__schild--alt { color: #8a8a8a; }
+/* #8a8a8a lag bei 3,45:1 auf Weiss - unter den 4,5:1 fuer 12px-Text.
+   #6e6e6e haelt 5,10:1 und bleibt deutlich blasser als das Schild
+   der neuen Seite, die Rangordnung der beiden Spalten stimmt also weiter. */
+.vgl__schild--alt { color: #6e6e6e; }
 
 /* --- alt --- */
 .vgl__seite--alt {

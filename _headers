@@ -2,6 +2,9 @@
 # Sie gehört ins Wurzelverzeichnis der veröffentlichten Dateien.
 
 /*
+  # Erzwingt HTTPS fuer ein Jahr. Der Browser merkt sich das und ruft die Seite
+  # nie wieder unverschluesselt auf - schuetzt vor Mitlesen im fremden WLAN.
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
   # Verhindert, dass die Seite in fremde Rahmen eingebettet wird (Clickjacking).
   X-Frame-Options: DENY
   # Browser sollen den Dateityp nicht raten.
