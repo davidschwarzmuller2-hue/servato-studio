@@ -556,3 +556,123 @@ body.hat-himmel .header__inner {
 @media (hover: none) {
   .btn--glanz { will-change: auto; }
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   FEINSCHLIFF 13.09.2026
+
+   Fünf gemessene Mängel, nicht fünf Geschmacksfragen. Steht bewusst als
+   letzter Block in der letzten Datei: mit einem Schnitt ab dieser Zeile
+   ist der Stand vom 09.09. wieder da.
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* ---------- 1. Fließtext auf 16px ----------
+   nocturne.css:110 setzt 15px auf den body. Unter 16px zoomt iOS beim
+   Antippen jedes Eingabefeld heran, und für Betriebsinhaber über 50 —
+   die Zielgruppe — ist 15px schlicht zu klein. 16.5px gibt der Grotesk
+   die Laufweite, die sie braucht. */
+body {
+  font-size: 16.5px;
+  line-height: 1.6;
+}
+
+/* Die Klassen, die 15/15.5px hart gesetzt hatten, ziehen mit. Labels,
+   Mikrotexte und Navigationsschrift bleiben absichtlich klein — sie sind
+   kein Fließtext. */
+.buehne__sub {
+  font-size: clamp(16.5px, 1.7vw, 18.5px);
+  line-height: 1.62;
+}
+.leistung__text p,
+.abschluss__lead p,
+.contact__lead,
+.steckbrief dd {
+  font-size: 16.5px;
+  line-height: 1.68;
+}
+
+/* ---------- 2. Die Überschrift darf laut werden ----------
+   62px auf einem 1440er Schirm ist für eine Seite, die von Handwerk lebt,
+   zu höflich. Mit 5.6vw blieb sie zwischen 1100 und 1440px stehen; 6.6vw
+   bei gleichem Deckel-Verhalten lässt sie bis 84px wachsen. Das enge
+   Tracking von -0.055em trägt das, weil es bei großen Graden erst richtig
+   greift — bei 32px würde dieselbe Zahl die Buchstaben verkleben, deshalb
+   fährt es über clamp mit. */
+.buehne__h1 {
+  /* Untergrenze bleibt bei 32px: mit 34px brach die Zeile auf einem
+     375er Telefon auf VIER Zeilen statt drei, und der Knopf rutschte
+     unter die Falz. Die Steigung 6.6vw traegt den Zuwachs trotzdem —
+     sie greift ab rund 490px Breite. */
+  font-size: clamp(32px, 6.6vw, 84px);
+  max-width: 11.1em;
+}
+/* Enges Tracking lebt von der Groesse. Bei 84px zieht -0.055em die
+   Buchstaben zu einem Block zusammen; bei 34px auf dem Handy verkleben
+   sie davon. Deshalb eine Stufe, keine Formel. */
+@media (max-width: 640px) {
+  .buehne__h1 { letter-spacing: -0.038em; }
+}
+
+/* ---------- 3. Der Hauptknopf wird flach ----------
+   Der 152°-Verlauf (#34343a → #08080a → #1c1c22) ist auf einem 44px hohen
+   Knopf nicht als Absicht lesbar, nur als Unsauberkeit: drei Grautöne auf
+   zwei Zentimetern. Ein Körper aus einer Farbe, dazu die Lichtkante oben
+   und die Schattentreppe — die tragen die Tiefe ohnehin allein.
+   Die Treppe bleibt unangetastet. */
+body .btn--glanz {
+  background: #0c0c0f !important;
+}
+body .btn--glanz:hover {
+  background: #17171c !important;
+}
+
+/* ---------- 4. Der Glow verliert das Rot ----------
+   --aurora-3 ist Terrakotta #c2410c. Unter einem schwarzen Knopf gelesen
+   ist das kein Gold-Hof, sondern ein roter Alarm-Ring — auf dem Handy
+   stand er wegen (hover:none) DAUERHAFT an. Zwei Änderungen:
+   der Verlauf endet jetzt in Bernstein statt Terrakotta, und auf Touch
+   glimmt er nur noch (.34 → .13) statt zu leuchten. Am Zeiger, wo er eine
+   Antwort auf eine Handlung ist, darf er weiter aufblenden. */
+.btn--glanz::before {
+  background: linear-gradient(100deg, var(--aurora-1), var(--aurora-2) 70%, #c98a2e);
+}
+.btn--glanz:hover::before,
+.btn--glanz:focus-visible::before { opacity: .5; }
+
+@media (hover: none) {
+  .btn--glanz::before { opacity: .13; }
+}
+
+/* ---------- 5. Der Aurora-Schleier wird entsättigt ----------
+   Drei Lagen Gold + Bernstein + Terrakotta ergeben auf Weiß einen
+   Pfirsichton, der wie vergilbtes Papier wirkt statt wie Licht. Die
+   Terrakotta-Lage fällt weg, die beiden übrigen gehen um rund ein Drittel
+   zurück. Der Schleier soll den Kopf der Seite wärmen, nicht einfärben. */
+.schein::before {
+  background:
+    radial-gradient(38% 54% at 26% 44%, rgba(217, 165, 32, .22), transparent 68%),
+    radial-gradient(34% 48% at 66% 34%, rgba(224, 123, 57, .14), transparent 70%);
+}
+.schein::after {
+  opacity: .62;
+  background:
+    radial-gradient(46% 58% at 70% 56%, rgba(224, 123, 57, .12), transparent 72%),
+    radial-gradient(44% 56% at 32% 62%, rgba(217, 165, 32, .13), transparent 72%);
+}
+
+/* ---------- 6. Die Oberflächen, die der Browser stellt ----------
+   Markierung, Schreibmarke und Bildlaufleiste kommen sonst vom
+   Betriebssystem und gehören zu keinem Entwurf. Drei Regeln, und die
+   Seite ist auch an den Rändern gebaut statt zusammengesetzt. */
+::selection {
+  background: var(--color-accent-200);
+  color: #1a1206;
+}
+body { caret-color: var(--color-accent); }
+
+@supports (scrollbar-color: auto) {
+  html {
+    scrollbar-color: var(--color-accent-300) transparent;
+    scrollbar-width: thin;
+  }
+}

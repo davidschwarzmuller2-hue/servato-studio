@@ -541,3 +541,58 @@ const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   ziele.forEach(el => { el.classList.add('anim-aus'); io.observe(el); });
 })();
+
+
+/* =====================================================================
+   8) Der Index auf leistungen.html — Marke und aktive Zeile
+   Die Illumination der Saetze laeuft rein in CSS (view()). Hier nur:
+   welcher Punkt ist gerade in der Lesezone, und die Marke faehrt hin.
+   Die Transition startet vom aktuellen Wert — mitten im Scrollen
+   umkehren ergibt keinen Sprung.
+   ===================================================================== */
+(function initIndex() {
+  const nav = $('.idx__nav');
+  if (!nav || !('IntersectionObserver' in window)) return;
+  const links = $$('.idx__liste a', nav);
+  const marke = $('.idx__marke', nav);
+  const liste = $('.idx__liste', nav);
+  const handy = window.matchMedia('(max-width: 820px)');
+
+  const setz = a => {
+    if (!a || a.classList.contains('aktiv')) return;
+    links.forEach(l => {
+      const an = l === a;
+      l.classList.toggle('aktiv', an);
+      if (an) l.setAttribute('aria-current', 'true'); else l.removeAttribute('aria-current');
+    });
+    if (handy.matches) {
+      // Nur die Pillenzeile schieben, nie die Seite.
+      const li = a.parentElement;
+      liste.scrollTo({ left: li.offsetLeft - (liste.clientWidth - li.offsetWidth) / 2, behavior: 'smooth' });
+    } else if (marke) {
+      marke.style.transform = 'translateY(' + a.offsetTop + 'px) scaleY(' + a.offsetHeight + ')';
+    }
+  };
+  if (marke) marke.style.transform = 'translateY(' + links[0].offsetTop + 'px) scaleY(' + links[0].offsetHeight + ')';
+
+  // Lesezone: das mittlere Drittel des Fensters. Wer dort steht, ist aktiv.
+  const io = new IntersectionObserver(eintraege => {
+    eintraege.forEach(e => {
+      if (!e.isIntersecting) return;
+      setz(nav.querySelector('a[href="#' + e.target.id + '"]'));
+    });
+  }, { rootMargin: '-35% 0px -45% 0px' });
+  $$('.idx__item').forEach(el => io.observe(el));
+
+  // Klick: weich hinscrollen, aktive Zeile sofort — Antwort auf den
+  // Druck, nicht erst auf das Ankommen.
+  links.forEach(a => a.addEventListener('click', ev => {
+    const ziel = document.getElementById(a.getAttribute('href').slice(1));
+    if (!ziel) return;
+    ev.preventDefault();
+    setz(a);
+    const ruhig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    ziel.scrollIntoView({ behavior: ruhig ? 'auto' : 'smooth', block: 'start' });
+    history.replaceState(null, '', '#' + ziel.id);
+  }));
+})();

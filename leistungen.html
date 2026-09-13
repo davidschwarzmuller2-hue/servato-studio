@@ -47,11 +47,11 @@
 <!-- ?v=N an den Stylesheets: Browser halten CSS hartnaeckig im Cache.
      Beim Aendern des Designs saehe man sonst die alte Fassung und suchte den
      Fehler im Code statt im Cache. Zahl bei jeder Aenderung hochzaehlen. -->
-<link rel="stylesheet" href="fonts/fonts.css?v=44">
-<link rel="stylesheet" href="styles/nocturne.css?v=44">
-<link rel="stylesheet" href="styles/site.css?v=44">
-<link rel="stylesheet" href="styles/hell.css?v=44">
-<link rel="stylesheet" href="styles/apple.css?v=44">
+<link rel="stylesheet" href="fonts/fonts.css?v=49">
+<link rel="stylesheet" href="styles/nocturne.css?v=49">
+<link rel="stylesheet" href="styles/site.css?v=49">
+<link rel="stylesheet" href="styles/hell.css?v=49">
+<link rel="stylesheet" href="styles/apple.css?v=49">
 </head>
 <body>
 
@@ -102,7 +102,7 @@
   <p class="muted">Kein Bauchladen. Was Sie bekommen, entscheidet das Ziel Ihres Betriebs, nicht eine Featureliste.</p>
 </section>
 
-<section class="wrap section" data-reveal style="padding-top:clamp(20px,3vw,40px)">
+<section class="wrap section" id="umfang" style="padding-top:clamp(20px,3vw,40px)">
   <div class="split">
     <div>
       <div class="kicker">Der Umfang</div>
@@ -111,41 +111,56 @@
     <p class="lead muted">Kein Baukasten für alles, sondern ein Umfang, der zu einem Betrieb mit Adresse und Telefonnummer passt. Ohne Aufpreis-Liste.</p>
   </div>
 
-  <div class="kann" data-stagger>
-    <div class="kann__feld kann__feld--gross">
-      <h3 class="kann__claim">Design und Entwicklung.</h3>
-      <p>Jede Seite von Hand gebaut. Kein Baukasten, kein Theme mit dreißig Plugins.</p>
-      <p class="kann__konkret">Sie lädt schnell und sieht auf einem alten Android so aus wie auf dem neuen iPhone.</p>
-    </div>
+  <!-- Der Index: links die feststehende Liste mit der wandernden Goldmarke,
+       rechts jeder Punkt mit einem Satz in der Serife als Auftakt. Die
+       Liste ist echte Navigation (Sprungmarken), nicht Zierde. Die
+       Illumination der Saetze laeuft ueber den Scrollweg (CSS view()),
+       das Skript setzt nur die Marke und die aktive Zeile. -->
+  <div class="idx">
+    <nav class="idx__nav" aria-label="Die sechs Leistungen">
+      <ul class="idx__liste">
+        <li><a href="#l-design" class="aktiv" aria-current="true">Design und Entwicklung</a></li>
+        <li><a href="#l-texte">Texte</a></li>
+        <li><a href="#l-bilder">Bilder</a></li>
+        <li><a href="#l-seo">Lokales SEO und Google-Profil</a></li>
+        <li><a href="#l-formular">Formular, Terminbuchung, Rückruf</a></li>
+        <li><a href="#l-betreuung">Betreuung nach dem Livegang</a></li>
+      </ul>
+      <span class="idx__marke" aria-hidden="true"></span>
+    </nav>
 
-    <div class="kann__feld">
-      <h3 class="kann__claim">Texte, die zu Ihnen klingen.</h3>
-      <p>Ich rufe an und lasse Sie erzählen. Was Kunden Sie immer wieder fragen, wird Ihr Text, in Ihren Worten statt in Marketingdeutsch.</p>
-    </div>
-
-    <div class="kann__feld">
-      <h3 class="kann__claim">Bilder, die passen.</h3>
-      <p>Zuerst schaue ich, was Sie schon haben, meist mehr als Sie denken. Reicht es nicht, planen wir einen Fototermin. Stockfotos erkennt jeder Besucher.</p>
-    </div>
-
-    <div class="kann__feld">
-      <h3 class="kann__claim">Lokales SEO und Google-Profil.</h3>
-      <p>Sauberer Aufbau, kurze Ladezeiten, Google-Eintrag eingerichtet und mit der Seite verzahnt, damit Sie gefunden werden, wenn jemand in Ihrer Stadt sucht.</p>
-    </div>
-
-    <div class="kann__feld">
-      <h3 class="kann__claim">Formular, Terminbuchung, Rückruf.</h3>
-      <p>Kontaktformular ist Standard. Terminbuchung und Rückrufwunsch kommen dazu, wenn sie zu Ihrem Ablauf passen, und laufen auch nach Feierabend.</p>
-    </div>
-
-    <!-- Laeuft als einziges nach dem Livegang weiter, deshalb liegt es quer
-         unter allem anderen statt daneben. -->
-    <div class="kann__feld kann__feld--breit">
-      <p class="kann__preis"><b>29&nbsp;€</b><span>im Monat, vier Wochen Kündigungsfrist</span></p>
-      <div>
-        <h3 class="kann__claim">Betreuung nach dem Livegang.</h3>
-        <p>Hosting, Updates, Backups und kleine Änderungen. Lieber selbst? Dann bekommen Sie alle Zugänge.</p>
-      </div>
+    <div class="idx__inhalt">
+      <article class="idx__item" id="l-design">
+        <p class="idx__satz">Sie lädt schnell und sieht auf einem alten Android so aus wie auf dem <em>neuen iPhone.</em></p>
+        <h3>Design und Entwicklung.</h3>
+        <p>Jede Seite von Hand gebaut. Kein Baukasten, kein Theme mit dreißig Plugins.</p>
+      </article>
+      <article class="idx__item" id="l-texte">
+        <p class="idx__satz">Was Kunden Sie am Telefon fragen, steht danach auf der Seite. <em>In Ihren Worten.</em></p>
+        <h3>Texte, die zu Ihnen klingen.</h3>
+        <p>Ich rufe an und lasse Sie erzählen. Was Kunden Sie immer wieder fragen, wird Ihr Text, statt Marketingdeutsch.</p>
+      </article>
+      <article class="idx__item" id="l-bilder">
+        <p class="idx__satz">Stockfotos erkennt jeder Besucher. <em>Ihre Werkstatt erkennt keiner.</em></p>
+        <h3>Bilder, die passen.</h3>
+        <p>Zuerst schaue ich, was Sie schon haben, meist mehr als Sie denken. Reicht es nicht, planen wir einen Fototermin.</p>
+      </article>
+      <article class="idx__item" id="l-seo">
+        <p class="idx__satz">Wer in Ihrer Stadt sucht, findet Sie. <em>Nicht die Kette am Stadtrand.</em></p>
+        <h3>Lokales SEO und Google-Profil.</h3>
+        <p>Sauberer Aufbau, kurze Ladezeiten, Google-Eintrag eingerichtet und mit der Seite verzahnt, damit Sie gefunden werden, wenn jemand in Ihrer Stadt sucht.</p>
+      </article>
+      <article class="idx__item" id="l-formular">
+        <p class="idx__satz">Der Rückrufwunsch kommt um 22 Uhr an. <em>Sie rufen morgens zurück.</em></p>
+        <h3>Formular, Terminbuchung, Rückruf.</h3>
+        <p>Kontaktformular ist Standard. Terminbuchung und Rückrufwunsch kommen dazu, wenn sie zu Ihrem Ablauf passen, und laufen auch nach Feierabend.</p>
+      </article>
+      <article class="idx__item" id="l-betreuung">
+        <p class="idx__preis"><b>29&nbsp;€</b> im Monat, vier Wochen Kündigungsfrist</p>
+        <p class="idx__satz">Hosting, Updates, Backups. <em>Oder alle Zugänge,</em> wenn Sie lieber selbst ran wollen.</p>
+        <h3>Betreuung nach dem Livegang.</h3>
+        <p>Kleine Änderungen sind drin. Lieber selbst? Dann bekommen Sie alle Zugänge.</p>
+      </article>
     </div>
   </div>
 </section>
@@ -274,6 +289,6 @@
   <span class="footer__copy">© 2026</span>
 </footer>
 
-<script src="js/app.js?v=44"></script>
+<script src="js/app.js?v=49"></script>
 </body>
 </html>
