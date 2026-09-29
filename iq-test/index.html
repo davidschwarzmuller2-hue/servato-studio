@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IQ-Test: 25 Aufgaben, 20 Minuten · Servato Studio</title>
+<meta name="description" content="Kostenloser IQ-Test mit 25 Aufgaben aus Figurenmatrizen, Zahlenreihen, Logik und räumlichem Denken. Ohne Anmeldung, mit Lösungen und ehrlicher Auswertung.">
+<!-- Noch nicht in Suchmaschinen: Die Seite liegt auf der Studio-Domain, passt
+     aber thematisch nicht zum Webdesign-Angebot. Zum Freischalten diese Zeile
+     löschen und iq-test/ in die sitemap.xml aufnehmen. -->
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#161826">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="IQ-Test: 25 Aufgaben, 20 Minuten">
+<meta property="og:description" content="Figurenmatrizen, Zahlenreihen, Logik und räumliches Denken. Ohne Anmeldung, mit Lösungen.">
+
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../styles/nocturne.css">
+<link rel="stylesheet" href="../styles/site.css">
+<link rel="stylesheet" href="iq-test.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+<!-- Muster für schraffierte Flächen. Nicht display:none — sonst zeichnen
+     manche Browser das Muster gar nicht. -->
+<svg class="iq-defs" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="iq-hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-width="2.2"/>
+    </pattern>
+  </defs>
+</svg>
+
+<header class="header">
+  <div class="header__inner">
+    <a class="header__brand" href="../index.html"><img class="header__mark" src="../assets/logo-mark.png" alt="" width="28" height="22">Servato&nbsp;Studio</a>
+  </div>
+</header>
+
+<main id="inhalt" class="wrap wrap--narrow iq">
+
+  <!-- ———————————— Start ———————————— -->
+  <section class="iq-intro" data-screen="intro">
+    <p class="kicker">Denksport · 25 Aufgaben · 20 Minuten</p>
+    <h1>Der IQ-Test mit <em class="serif">ehrlicher</em> Auswertung</h1>
+    <p class="lead muted">Figurenmatrizen, Zahlenreihen, Logik und räumliches Denken — von leicht bis richtig knifflig. Ohne Anmeldung, ohne E-Mail, am Ende mit allen Lösungen.</p>
+
+    <ul class="iq-facts">
+      <li><strong>25</strong><span>Aufgaben in vier Bereichen</span></li>
+      <li><strong>20 Min.</strong><span>Zeit, danach wird automatisch abgegeben</span></li>
+      <li><strong>0</strong><span>Daten, die deinen Browser verlassen</span></li>
+    </ul>
+
+    <div class="iq-rules">
+      <h2 class="iq-h3">So geht's</h2>
+      <ul>
+        <li>Pro Aufgabe gibt es genau eine richtige Antwort.</li>
+        <li>Du kannst Aufgaben überspringen und später zurückkehren.</li>
+        <li>Nicht beantwortet zählt als falsch — raten lohnt sich also.</li>
+        <li>Tastatur: <kbd>1</kbd>–<kbd>6</kbd> wählt eine Antwort, <kbd>←</kbd> <kbd>→</kbd> blättert.</li>
+      </ul>
+    </div>
+
+    <button type="button" class="btn btn--accent iq-start" data-start>Test starten <span aria-hidden="true">→</span></button>
+
+    <p class="iq-note muted-3">Ehrlich gesagt: Ein echter IQ-Wert braucht einen normierten Test unter Aufsicht, ausgewertet mit Daten tausender Teilnehmer. Dieser Test gibt dir einen <strong>Schätzwert</strong> — wie er berechnet wird, steht offen in der Auswertung.</p>
+  </section>
+
+  <!-- ———————————— Test ———————————— -->
+  <section class="iq-test" data-screen="test" hidden>
+    <div class="iq-bar">
+      <span class="iq-bar__count" data-count>Aufgabe 1 / 25</span>
+      <div class="iq-bar__progress" aria-hidden="true"><span data-progress></span></div>
+      <span class="iq-bar__timer" data-timer role="timer" aria-label="Verbleibende Zeit">20:00</span>
+    </div>
+
+    <div class="iq-question" data-question>
+      <p class="kicker" data-cat></p>
+      <h2 class="iq-prompt" data-prompt tabindex="-1"></h2>
+      <div class="iq-stage" data-stage>
+        <div class="iq-figure" data-figure></div>
+        <div class="iq-options" data-options role="radiogroup" aria-label="Antworten"></div>
+      </div>
+    </div>
+
+    <div class="iq-nav">
+      <button type="button" class="btn btn--small" data-prev><span aria-hidden="true">←</span> Zurück</button>
+      <button type="button" class="btn btn--small" data-next>Überspringen <span aria-hidden="true">→</span></button>
+    </div>
+
+    <nav class="iq-dots" aria-label="Aufgabenübersicht">
+      <ol data-dots></ol>
+    </nav>
+
+    <div class="iq-finish">
+      <button type="button" class="btn btn--link" data-finish>Test abgeben</button>
+      <div class="iq-confirm" data-confirm hidden>
+        <p data-confirm-text></p>
+        <div class="iq-confirm__actions">
+          <button type="button" class="btn btn--small btn--accent" data-confirm-yes>Ja, abgeben</button>
+          <button type="button" class="btn btn--small" data-confirm-no>Weiter lösen</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ———————————— Ergebnis ———————————— -->
+  <section class="iq-result" data-screen="result" hidden>
+    <p class="kicker" data-result-kicker>Dein Ergebnis</p>
+    <h1 class="iq-result__h1" tabindex="-1" data-result-h1>
+      <span class="iq-score" data-iq>—</span>
+      <span class="iq-score__label">geschätzter IQ</span>
+    </h1>
+    <p class="lead" data-band></p>
+
+    <ul class="iq-facts iq-facts--result">
+      <li><strong data-raw>0 / 25</strong><span>Aufgaben richtig</span></li>
+      <li><strong data-pct>—</strong><span>rechnerisch besser als dieser Anteil</span></li>
+      <li><strong data-time>—</strong><span>benötigte Zeit</span></li>
+    </ul>
+
+    <div class="iq-cats" data-cats></div>
+
+    <div class="iq-actions">
+      <button type="button" class="btn btn--accent" data-share>Ergebnis teilen</button>
+      <button type="button" class="btn" data-restart>Nochmal von vorn</button>
+    </div>
+
+    <details class="iq-method">
+      <summary>Wie der Schätzwert zustande kommt</summary>
+      <div data-method></div>
+    </details>
+
+    <h2 class="iq-h3 iq-review__title">Alle Aufgaben mit Lösung</h2>
+    <ol class="iq-review" data-review></ol>
+  </section>
+
+</main>
+
+<footer class="wrap footer">
+  <span class="footer__brand">Servato Studio</span>
+  <a class="footer__legal" href="../impressum.html">Impressum</a>
+  <a class="footer__legal" href="../datenschutz.html">Datenschutz</a>
+  <span class="footer__copy">© 2026</span>
+</footer>
+
+<script src="aufgaben.js?v=1"></script>
+<script src="iq-test.js?v=1"></script>
+</body>
+</html>

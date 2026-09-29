@@ -16,6 +16,8 @@ kontakt.html        Formular
 impressum.html      Pflichtangaben nach § 5 DDG
 datenschutz.html    Datenschutzerklärung
 404.html            Wird bei falscher Adresse ausgeliefert
+iq-test/            Eigenständiger IQ-Test (25 Aufgaben, 20 Minuten), nicht verlinkt,
+                    noindex — Details unten unter „IQ-Test"
 
 styles/nocturne.css Design-Tokens: Farben, Schriftgrößen, Abstände, Radien, Schatten
 styles/site.css     Layout und Aussehen (Klassen wie .hero, .plan, .faq, .pledge, .marquee)
@@ -228,3 +230,22 @@ Diese Version wurde aus dem Design-Entwurf `Servato Studio.dc.html` übertragen.
 Das Design folgt dem Nocturne-System (dunkler Grund, ein Akzentviolett als Linie und Glow,
 umrandete statt gefüllte Buttons, Inter in Gewicht 500 für Überschriften) — beim Erweitern
 bitte diese Regeln fortführen.
+
+## IQ-Test (`iq-test/`)
+
+Eigenständige Seite unter `/iq-test/`, bewusst **nicht** in Navigation und Sitemap und mit
+`noindex` — sie passt thematisch nicht zum Webdesign-Angebot. Zum Freischalten die
+`robots`-Zeile in `iq-test/index.html` löschen und die Adresse in `sitemap.xml` eintragen.
+
+```
+iq-test/index.html    Start, Test, Ergebnis (drei Ansichten, per JS umgeschaltet)
+iq-test/aufgaben.js   Die 25 Aufgaben. options[0] ist immer die richtige Antwort,
+                      die Reihenfolge wird beim Start gemischt.
+iq-test/iq-test.js    Ablauf, Timer, Zeichnen der Figuren (SVG), Auswertung
+iq-test/iq-test.css   Aussehen, nur für diese Seite
+```
+
+Der angezeigte IQ ist ein **Schätzwert**: `IQ = 100 + 15 × (Punkte − 13) ÷ 4,5`. Die 13 und die
+4,5 (`SCORE_MEAN`, `SCORE_SD` oben in `iq-test.js`) sind Annahmen, keine Messwerte. Wer echte
+Ergebnisse sammelt, trägt dort Mittelwert und Standardabweichung der Rohpunkte ein.
+Es werden keine Daten gesendet — alles bleibt im Browser.
